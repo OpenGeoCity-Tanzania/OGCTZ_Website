@@ -2,9 +2,46 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light dark">
-    <title>{% block title %}{% endblock %} | {{ site_name }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light dark">
+        {# Title: prefer page_title variable, fallback to block title #}
+        <title>{% if page_title %}{{ page_title }}{% else %}{% block title %}{% endblock %}{% endif %} | {{ site_name }}</title>
+
+        {# Basic SEO meta tags (page can override `page_description` and `page_keywords`) #}
+        <meta name="description" content="{{ page_description or default_description }}">
+        <meta name="keywords" content="{{ page_keywords or default_keywords }}">
+        <link rel="canonical" href="{{ (page_canonical or site_url ~ request.path) }}">
+
+        {# OpenGraph / Social #}
+        <meta property="og:site_name" content="{{ site_name }}">
+        <meta property="og:title" content="{{ page_title or site_name }}">
+        <meta property="og:description" content="{{ page_description or default_description }}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ site_url ~ request.path }}">
+        <meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='img/favicons/fav_org/favicon-32x32.png') }}">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="{{ twitter_handle }}">
+        <meta name="twitter:title" content="{{ page_title or site_name }}">
+        <meta name="twitter:description" content="{{ page_description or default_description }}">
+
+        {# JSON-LD Organization structured data #}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "{{ site_name }}",
+            "url": "{{ site_url }}",
+            "logo": "{{ site_url }}{{ url_for('static', filename='img/favicons/fav_org/favicon-32x32.png') }}",
+            "contactPoint": [{
+                "@type": "ContactPoint",
+                "email": "{{ email }}",
+                "telephone": "{{ phone }}",
+                "contactType": "customer support",
+                "areaServed": "TZ"
+            }]
+        }
+        </script>
     
     <!-- Favicon Links with IDs for dynamic switching -->
     <link id="icon-ico" rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicons/fav_org/favicon.ico') }}">

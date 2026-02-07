@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, Response
 import os
 
 # Absolute path of current directory
@@ -21,9 +21,13 @@ def inject_global_vars():
         "site_name": "OpenGeoCity Tanzania",
         "email": "info@ogctz.org",
         "phone": "+255 700 000 000",
-    
         "location": "Dodoma, Tanzania",
-        "founded": "2021"
+        "founded": "2021",
+        # SEO defaults — can be overridden per-page by providing `page_description` or `page_keywords`
+        "site_url": os.environ.get("SITE_URL", "https://ogctz.org"),
+        "default_description": "OpenGeoCity Tanzania — geospatial innovation, urban data and mapping for resilient cities.",
+        "default_keywords": "OpenGeoCity, geospatial, GIS, mapping, Tanzania, urban planning, data",
+        "twitter_handle": os.environ.get("TWITTER_HANDLE", "@OpenGeoCityTZ")
     }   
 
 # Main Pages
@@ -54,6 +58,34 @@ def contact():
 @app.route("/resources")
 def resources():
     return render_template("resources.html", page_title="Resources")
+
+
+# Sitemap and robots
+@app.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    # list of site paths to include in sitemap
+    paths = [
+        '/',
+        '/about',
+        '/services',
+        '/projects',
+        '/team',
+        '/contact',
+        '/resources'
+    ]
+    site_url = os.environ.get("SITE_URL", "https://ogctz.org")
+    return render_template('sitemap.xml', paths=paths, site_url=site_url), 200, {'Content-Type': 'application/xml'}
+
+
+@app.route('/robots.txt')
+def robots_txt():
+    site_url = os.environ.get("SITE_URL", "https://ogctz.org")
+    txt = f"""User-agent: *
+Disallow:
+
+Sitemap: {site_url}/sitemap.xml
+"""
+    return Response(txt, mimetype='text/plain')
 
 # API Routes
 @app.route("/subscribe", methods=["POST"])
