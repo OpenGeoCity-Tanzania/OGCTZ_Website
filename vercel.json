@@ -3,6 +3,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": null,
-  "outputDirectory": "web_frontend",
+  "outputDirectory": "ogctz_frontend",
   "public": true
 }
