@@ -1,6 +1,17 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
+import os
 
-app = Flask(__name__)
+# Get the directory where this app.py is located
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Create Flask app with explicit template and static folder paths
+app = Flask(
+    __name__,
+    template_folder=os.path.join(current_dir, 'templates'),
+    static_folder=os.path.join(current_dir, 'static'),
+    static_url_path='/static'
+)
+
 app.secret_key = "secret_key_for_session"  # Required for flash messages
 
 # Context processor to make variables available in all templates
