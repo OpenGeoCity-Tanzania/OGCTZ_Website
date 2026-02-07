@@ -1,0 +1,22 @@
+Folder PATH listing
+Volume serial number is 964E-9121
+C:.
++---web_frontend
+    +---static
+    ¦   +---public
+    ¦   ¦   +---css
+    ¦   ¦   ¦   +---partials
+    ¦   ¦   ¦   +---sections
+    ¦   ¦   +---js
+    ¦   ¦       +---partials
+    ¦   ¦       +---sections
+    ¦   +---superuser
+    ¦       +---css
+    ¦       +---js
+    +---templates
+        +---public
+        ¦   +---partials
+        ¦   +---sections
+        +---superuser
+            +---partials
+            +---sections

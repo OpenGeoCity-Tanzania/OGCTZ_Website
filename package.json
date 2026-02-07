@@ -1,0 +1,10 @@
+{
+  "name": "opengeocity-web",
+  "version": "1.0.0",
+  "description": "OpenGeoCity Web Frontend",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Development server'",
+    "build": "echo 'Build complete'"
+  }
+}
