@@ -1,27 +1,30 @@
 import sys
 import os
-from pathlib import Path
 
-# Get absolute paths
-project_root = Path(__file__).parent.parent
-frontend_dir = project_root / "ogctz_frontend"
+# Set up paths for Vercel serverless
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+frontend_dir = os.path.join(project_root, 'ogctz_frontend')
 
-# Add frontend to path
-sys.path.insert(0, str(frontend_dir))
+# Add to Python path
+if frontend_dir not in sys.path:
+    sys.path.insert(0, frontend_dir)
 
-# Important: Set Flask's template and static folders to point to ogctz_frontend
-os.environ['FLASK_ENV'] = 'production'
-
-# Import after path is set
+# Configure Flask
 from flask import Flask, render_template, request, flash, redirect, url_for
 
-# Create Flask app with explicit template folder
-app = Flask(__name__, 
-            template_folder=str(frontend_dir / 'templates'),
-            static_folder=str(frontend_dir / 'static'))
+# Create Flask app with correct paths
+app = Flask(
+    __name__,
+    template_folder=os.path.join(frontend_dir, 'templates'),
+    static_folder=os.path.join(frontend_dir, 'static'),
+    static_url_path='/static'
+)
 
+app.config['JSON_SORT_KEYS'] = False
 app.secret_key = "secret_key_for_session"
 
+# Context processor
 @app.context_processor
 def inject_global_vars():
     return {
@@ -30,21 +33,32 @@ def inject_global_vars():
         "phone": "+255 700 000 000"
     }
 
-@app.route('/')
+# Routes
+@app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html', title="Home")
+    try:
+        return render_template('index.html', title="Home")
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
-@app.route('/projects')
+@app.route('/projects', methods=['GET'])
 def projects():
-    return render_template('projects.html', title="Our Projects")
+    try:
+        return render_template('projects.html', title="Our Projects")
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
-    email = request.form.get('email')
-    flash(f"Thanks for subscribing! ({email})", "success")
-    return redirect(url_for('home'))
+    try:
+        email = request.form.get('email')
+        flash(f"Thanks for subscribing! ({email})", "success")
+        return redirect(url_for('home'))
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
-# For Vercel serverless
-if __name__ != "__main__":
-    # Running on Vercel
-    pass
+# Health check route
+@app.route('/api/health', methods=['GET'])
+def health():
+    return {'status': 'ok'}, 200
+
