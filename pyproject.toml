@@ -12,3 +12,7 @@ dependencies = [
     "flask-cors>=6.0.2"
 ]
 
+[tool.setuptools]
+py-modules = ["app"]
+
+
