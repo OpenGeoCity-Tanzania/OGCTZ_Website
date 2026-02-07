@@ -166,6 +166,29 @@ body {
     }
 }
 
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* ===== ICON STYLING: enforce single-color icons ===== */
+    :root {
+        --icon-color: #000000; /* black for light theme */
+    }
+
+    html.dark {
+        --icon-color: #ffffff; /* white for dark mode */
+    }
+
+    svg.icon {
+        color: var(--icon-color) !important;
+        fill: currentColor !important;
+        stroke: currentColor !important;
+        vector-effect: non-scaling-stroke;
+    }
 @keyframes zoomIn {
     from {
         opacity: 0;
@@ -395,15 +418,25 @@ button, [class*="btn"] {
 }
 
 @keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ===== ICON STYLING: enforce single-color icons ===== */
+:root {
+    --icon-color: #000000; /* black for light theme */
+}
+
+html.dark {
+    --icon-color: #ffffff; /* white for dark mode */
+}
+
+svg.icon {
+    color: var(--icon-color) !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+    vector-effect: non-scaling-stroke;
 }
 
 /* ===== LOADING ANIMATIONS ===== */
