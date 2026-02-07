@@ -1,27 +1,47 @@
-<nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+<nav class="bg-white/90 dark:bg-brand-dark/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20">
             <div class="flex items-center">
                 <a href="{{ url_for('home') }}" class="flex-shrink-0 flex items-center gap-2 group">
-                    <div class="bg-brand-primary/10 p-2 rounded-lg group-hover:bg-brand-primary/20 transition">
+                    <div class="bg-brand-primary/10 dark:bg-brand-primary/20 p-2 rounded-lg group-hover:bg-brand-primary/20 dark:group-hover:bg-brand-primary/30 transition">
                          <svg class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7" />
                         </svg>
                     </div>
-                    <span class="text-2xl font-bold text-brand-dark tracking-tight">
+                    <span class="text-2xl font-bold text-brand-dark dark:text-brand-light tracking-tight">
                         OpenGeoCity<span class="text-brand-primary">Tanzania</span>
                     </span>
                 </a>
             </div>
 
             <div class="hidden md:flex md:items-center md:space-x-8">
-                <a href="{{ url_for('home') }}" class="text-slate-600 hover:text-brand-primary font-medium transition">Home</a>
-                <a href="{{ url_for('projects') }}" class="text-slate-600 hover:text-brand-primary font-medium transition">Projects</a>
-                <a href="#" class="px-5 py-2.5 bg-brand-dark text-white rounded-full font-medium hover:bg-slate-800 transition shadow-lg hover:shadow-brand-primary/25">Contact Us</a>
+                <a href="{{ url_for('home') }}" class="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary font-medium transition">Home</a>
+                <a href="{{ url_for('projects') }}" class="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary font-medium transition">Projects</a>
+                <a href="#" class="px-5 py-2.5 bg-brand-dark dark:bg-brand-primary text-white dark:text-brand-dark rounded-full font-medium hover:bg-slate-800 dark:hover:bg-brand-primary/90 transition shadow-lg hover:shadow-brand-primary/25">Contact Us</a>
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" title="Toggle dark mode" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <svg class="sun-icon h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zM4.343 4.343a1 1 0 111.414-1.414l1.414 1.414a1 1 0 11-1.414 1.414L4.343 4.343zm11.314 0l1.414-1.414a1 1 0 00-1.414-1.414l-1.414 1.414a1 1 0 001.414 1.414zM4 10a1 1 0 011-1h2a1 1 0 110 2H5a1 1 0 01-1-1zm10 0a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zM4.343 15.657l-1.414 1.414a1 1 0 001.414 1.414l1.414-1.414a1 1 0 00-1.414-1.414zm11.314 0l-1.414 1.414a1 1 0 101.414 1.414l1.414-1.414a1 1 0 00-1.414-1.414zM10 15a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    <svg class="moon-icon h-5 w-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                    </svg>
+                </button>
             </div>
 
-            <div class="flex items-center md:hidden">
-                <button id="mobile-menu-btn" type="button" class="text-slate-500 hover:text-brand-dark focus:outline-none p-2">
+            <div class="flex items-center md:hidden gap-2">
+                <!-- Theme Toggle for Mobile -->
+                <button id="theme-toggle-btn" title="Toggle dark mode" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <svg class="sun-icon h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zM4.343 4.343a1 1 0 111.414-1.414l1.414 1.414a1 1 0 11-1.414 1.414L4.343 4.343zm11.314 0l1.414-1.414a1 1 0 00-1.414-1.414l-1.414 1.414a1 1 0 001.414 1.414zM4 10a1 1 0 011-1h2a1 1 0 110 2H5a1 1 0 01-1-1zm10 0a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zM4.343 15.657l-1.414 1.414a1 1 0 001.414 1.414l1.414-1.414a1 1 0 00-1.414-1.414zm11.314 0l-1.414 1.414a1 1 0 101.414 1.414l1.414-1.414a1 1 0 00-1.414-1.414zM10 15a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    <svg class="moon-icon h-5 w-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                    </svg>
+                </button>
+                
+                <button id="mobile-menu-btn" type="button" class="text-slate-500 dark:text-slate-400 hover:text-brand-dark dark:hover:text-brand-light focus:outline-none p-2 transition">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -30,11 +50,11 @@
         </div>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100">
+    <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-brand-dark border-t border-slate-100 dark:border-slate-700 transition-colors duration-300">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="{{ url_for('home') }}" class="block px-3 py-4 text-base font-medium text-slate-700 hover:text-brand-primary hover:bg-slate-50 rounded-md">Home</a>
-            <a href="{{ url_for('projects') }}" class="block px-3 py-4 text-base font-medium text-slate-700 hover:text-brand-primary hover:bg-slate-50 rounded-md">Projects</a>
-            <a href="#" class="block px-3 py-4 text-base font-bold text-brand-primary hover:bg-slate-50 rounded-md">Contact Us</a>
+            <a href="{{ url_for('home') }}" class="block px-3 py-4 text-base font-medium text-slate-700 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-slate-50 dark:hover:bg-slate-800 rounded-md transition">Home</a>
+            <a href="{{ url_for('projects') }}" class="block px-3 py-4 text-base font-medium text-slate-700 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-slate-50 dark:hover:bg-slate-800 rounded-md transition">Projects</a>
+            <a href="#" class="block px-3 py-4 text-base font-bold text-brand-primary hover:bg-slate-50 dark:hover:bg-slate-800 rounded-md transition">Contact Us</a>
         </div>
     </div>
 </nav>

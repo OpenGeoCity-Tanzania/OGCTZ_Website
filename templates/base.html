@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>{% block title %}{% endblock %} | {{ site_name }}</title>
     
-    <!-- Favicon Links -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicons/fav_org/favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicons/fav_org/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicons/fav_org/favicon-16x16.png') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicons/fav_org/apple-touch-icon.png') }}">
+    <!-- Favicon Links with IDs for dynamic switching -->
+    <link id="icon-ico" rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicons/fav_org/favicon.ico') }}">
+    <link id="icon32" rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicons/fav_org/favicon-32x32.png') }}">
+    <link id="icon16" rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicons/fav_org/favicon-16x16.png') }}">
+    <link id="apple-touch" rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicons/fav_org/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='img/favicons/fav_org/site.webmanifest') }}">
     <meta name="theme-color" content="#0ea5e9">
     
@@ -17,6 +18,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -42,10 +44,11 @@
     </script>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script defer src="{{ url_for('static', filename='js/theme.js') }}"></script>
     
     {% include 'includes/analytics.html' ignore missing %}
 </head>
-<body class="bg-brand-light text-slate-700 font-sans flex flex-col min-h-screen">
+<body class="bg-brand-light dark:bg-brand-dark text-slate-700 dark:text-slate-100 font-sans flex flex-col min-h-screen transition-colors duration-300">
 
     {% include 'includes/header.html' %}
 

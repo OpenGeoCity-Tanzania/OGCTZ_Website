@@ -1,5 +1,4 @@
-
-/* Custom Scrollbar for Chrome, Safari and Opera */
+/* Light Mode Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -15,4 +14,118 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8; 
+}
+
+/* Dark Mode Scrollbar */
+html.dark ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 5px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* Smooth transitions for dark mode */
+body, html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme toggle button transitions */
+#theme-toggle-btn {
+    transition: all 0.3s ease;
+}
+
+#theme-toggle-btn:hover {
+    transform: rotate(20deg);
+}
+
+.sun-icon, .moon-icon {
+    transition: transform 0.3s ease;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Utility classes */
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-slide-in-down {
+    animation: slideInDown 0.5s ease-out forwards;
+}
+
+.animate-slide-in-up {
+    animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Dark mode text colors for consistency */
+html.dark a {
+    transition: color 0.2s ease;
+}
+
+html.dark button {
+    transition: all 0.2s ease;
+}
+
+/* Responsive dark mode support */
+@media (prefers-color-scheme: dark) {
+    html.system-dark-mode {
+        --bg-color: #0f172a;
+        --text-color: #f8fafc;
+    }
+}
+
+/* Smooth color transitions */
+* {
+    @apply transition-colors duration-300;
 }

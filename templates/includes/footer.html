@@ -1,28 +1,28 @@
-<footer class="bg-brand-dark text-slate-400 py-12 border-t border-slate-800">
+<footer class="bg-brand-dark dark:bg-slate-950 text-slate-400 dark:text-slate-300 py-12 border-t border-slate-800 dark:border-slate-700 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         
         <div class="col-span-1 md:col-span-2">
-            <span class="text-2xl font-bold text-white tracking-tight">
+            <span class="text-2xl font-bold text-white dark:text-brand-light tracking-tight">
                 OpenGeoCity<span class="text-brand-primary">Tanzania</span>
             </span>
-            <p class="mt-4 text-sm leading-relaxed max-w-xs">
+            <p class="mt-4 text-sm leading-relaxed max-w-xs dark:text-slate-300">
                 OpenGeoCity Tanzania is a premier NGO specializing in geospatial innovation and data-driven urban strategy in Dodoma.
             </p>
         </div>
 
         <div>
-            <h3 class="text-white font-bold mb-4">Company</h3>
+            <h3 class="text-white dark:text-brand-light font-bold mb-4">Company</h3>
             <ul class="space-y-2 text-sm">
-                <li><a href="{{ url_for('home') }}" class="hover:text-brand-primary transition">About Us</a></li>
-                <li><a href="{{ url_for('projects') }}" class="hover:text-brand-primary transition">Projects</a></li>
-                <li><a href="#" class="hover:text-brand-primary transition">Careers</a></li>
-                <li><a href="#" class="hover:text-brand-primary transition">Privacy Policy</a></li>
+                <li><a href="{{ url_for('home') }}" class="text-slate-400 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary transition">About Us</a></li>
+                <li><a href="{{ url_for('projects') }}" class="text-slate-400 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary transition">Projects</a></li>
+                <li><a href="#" class="text-slate-400 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary transition">Careers</a></li>
+                <li><a href="#" class="text-slate-400 dark:text-slate-300 hover:text-brand-primary dark:hover:text-brand-primary transition">Privacy Policy</a></li>
             </ul>
         </div>
 
         <div>
-            <h3 class="text-white font-bold mb-4">Contact</h3>
-            <ul class="space-y-2 text-sm">
+            <h3 class="text-white dark:text-brand-light font-bold mb-4">Contact</h3>
+            <ul class="space-y-2 text-sm dark:text-slate-300">
                 <li>Dodoma, Tanzania</li>
                 <li>P.O. Box 2259</li>
                 <li><a href="mailto:{{ email }}" class="text-brand-primary hover:underline">{{ email }}</a></li>
@@ -30,7 +30,7 @@
         </div>
     </div>
     
-    <div class="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center text-xs">
+    <div class="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 dark:border-slate-700 text-center text-xs text-slate-400 dark:text-slate-400">
         &copy; 2024 OpenGeoCity Tanzania. All Rights Reserved.
     </div>
 </footer>
