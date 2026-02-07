@@ -46,10 +46,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script defer src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/effects.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/animated-bg.js') }}"></script>
     
     {% include 'includes/analytics.html' ignore missing %}
 </head>
 <body class="bg-brand-light dark:bg-brand-dark text-slate-700 dark:text-slate-100 font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <!-- Animated Scientific Background -->
+    {% include 'includes/animated-bg.html' %}
 
     {% include 'includes/header.html' %}
 

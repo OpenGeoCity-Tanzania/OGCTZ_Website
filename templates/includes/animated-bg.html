@@ -1,0 +1,43 @@
+<!-- Animated Scientific Background Canvas -->
+<canvas id="animated-bg-canvas" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+"></canvas>
+
+<style>
+    /* Adjust main content to be above canvas */
+    body {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ensure nav stays on top */
+    nav {
+        position: relative;
+        z-index: 50;
+    }
+
+    /* Ensure main and footer are above canvas */
+    main {
+        position: relative;
+        z-index: 1;
+    }
+
+    footer {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Canvas adapts to dark mode */
+    @media (max-width: 768px) {
+        /* Reduce particle count on mobile by CSS only indicator */
+        #animated-bg-canvas {
+            opacity: 0.5;
+        }
+    }
+</style>
