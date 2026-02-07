@@ -84,7 +84,8 @@ class WaterBubblesBackground {
       baseR: r,
       phase: Math.random() * Math.PI * 2,
       hue: 200 + Math.random() * 60,
-      alpha: 0.5 + Math.random() * 0.4
+      alpha: 0.5 + Math.random() * 0.4,
+      pulse: 0
     };
   }
 
@@ -103,6 +104,8 @@ class WaterBubblesBackground {
         const force = (1 - dist / this.options.repulsion) * this.options.repulsionStrength;
         b.vx += (dx / dist) * force * (this.mouse.down ? 1.6 : 1);
         b.vy += (dy / dist) * force * (this.mouse.down ? 1.6 : 1);
+        // build a small pulse/ripple when cursor interacts
+        b.pulse = Math.min(1, b.pulse + force * 6);
       }
 
       // small pulsation to radius
@@ -122,6 +125,8 @@ class WaterBubblesBackground {
       // gentle damping
       b.vx *= 0.995;
       b.vy *= 0.995;
+      // decay pulse
+      b.pulse *= 0.92;
     }
   }
 
@@ -195,6 +200,18 @@ class WaterBubblesBackground {
       this.ctx.arc(b.x - b.r * 0.45, b.y - b.r * 0.45, Math.max(1, b.r * 0.25), 0, Math.PI * 2);
       this.ctx.fillStyle = dark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.9)';
       this.ctx.fill();
+
+      // subtle pulse ring when cursor interacts
+      if (b.pulse > 0.02) {
+        const ringAlpha = Math.min(0.6, b.pulse * 0.9);
+        this.ctx.beginPath();
+        this.ctx.lineWidth = Math.max(1, b.r * 0.18);
+        this.ctx.strokeStyle = `hsla(${b.hue}, 90%, 65%, ${ringAlpha})`;
+        this.ctx.globalCompositeOperation = 'lighter';
+        this.ctx.arc(b.x, b.y, b.r * (1 + 0.6 * b.pulse), 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.globalCompositeOperation = 'source-over';
+      }
     }
 
     // soft vignette for a smarter, focused look
