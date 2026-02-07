@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="py-20 bg-brand-dark overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Get In Touch</h1>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+                We'd love to hear from you. Let's discuss how we can collaborate to advance geospatial innovation.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-20 bg-white dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-3 gap-12 mb-20">
+            
+            <!-- Contact Info Cards -->
+            <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="text-4xl mb-4">📍</div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2">Address</h3>
+                <p class="text-slate-600 dark:text-slate-300">{{ location }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">P.O. Box 2259, Dodoma</p>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="text-4xl mb-4">📧</div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2">Email</h3>
+                <a href="mailto:{{ email }}" class="text-brand-primary hover:underline">{{ email }}</a>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">For general inquiries</p>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="text-4xl mb-4">📞</div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2">Phone</h3>
+                <a href="tel:+255700000000" class="text-brand-primary hover:underline">{{ phone }}</a>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Monday - Friday 9AM - 5PM EAT</p>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8 text-center">Send us a Message</h2>
+            <form action="{{ url_for('contact_submit') }}" method="POST" class="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700">
+                
+                <div class="mb-6">
+                    <label for="name" class="block text-sm font-semibold text-brand-dark dark:text-white mb-2">Full Name *</label>
+                    <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-primary dark:focus:border-brand-primary" placeholder="Your name">
+                </div>
+
+                <div class="mb-6">
+                    <label for="email" class="block text-sm font-semibold text-brand-dark dark:text-white mb-2">Email Address *</label>
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-primary dark:focus:border-brand-primary" placeholder="your@email.com">
+                </div>
+
+                <div class="mb-6">
+                    <label for="subject" class="block text-sm font-semibold text-brand-dark dark:text-white mb-2">Subject *</label>
+                    <input type="text" id="subject" name="subject" required class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-primary dark:focus:border-brand-primary" placeholder="How can we help?">
+                </div>
+
+                <div class="mb-6">
+                    <label for="message" class="block text-sm font-semibold text-brand-dark dark:text-white mb-2">Message *</label>
+                    <textarea id="message" name="message" rows="6" required class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-primary dark:focus:border-brand-primary" placeholder="Tell us more about your inquiry..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-sky-600 transition">
+                    Send Message
+                </button>
+                
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-4 text-center">
+                    We'll get back to you within 24 business hours.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-20 bg-slate-50 dark:bg-slate-800">
+    <div class="max-w-4xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-brand-dark dark:text-white mb-12">Frequently Asked Questions</h2>
+        
+        <div class="space-y-4">
+            <!-- FAQ Item 1 -->
+            <details class="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-6 cursor-pointer group">
+                <summary class="flex items-center justify-between font-semibold text-brand-dark dark:text-white">
+                    <span>What services do you offer?</span>
+                    <span class="text-xl group-open:rotate-180 transition">▼</span>
+                </summary>
+                <p class="text-slate-600 dark:text-slate-300 mt-4">
+                    We provide comprehensive geospatial services including mapping, data analytics, urban planning, environmental monitoring, training, and strategic consulting. Visit our <a href="{{ url_for('services') }}" class="text-brand-primary hover:underline">services page</a> for detailed information.
+                </p>
+            </details>
+
+            <!-- FAQ Item 2 -->
+            <details class="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-6 cursor-pointer group">
+                <summary class="flex items-center justify-between font-semibold text-brand-dark dark:text-white">
+                    <span>What is your pricing model?</span>
+                    <span class="text-xl group-open:rotate-180 transition">▼</span>
+                </summary>
+                <p class="text-slate-600 dark:text-slate-300 mt-4">
+                    Our pricing varies based on project scope, complexity, and duration. We offer flexible packages tailored to different organizational needs. Contact us for a customized quote.
+                </p>
+            </details>
+
+            <!-- FAQ Item 3 -->
+            <details class="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-6 cursor-pointer group">
+                <summary class="flex items-center justify-between font-semibold text-brand-dark dark:text-white">
+                    <span>Do you provide training?</span>
+                    <span class="text-xl group-open:rotate-180 transition">▼</span>
+                </summary>
+                <p class="text-slate-600 dark:text-slate-300 mt-4">
+                    Yes! We offer comprehensive training programs in GIS, remote sensing, and geospatial analysis. We can conduct workshops tailored to your organization's needs.
+                </p>
+            </details>
+
+            <!-- FAQ Item 4 -->
+            <details class="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-6 cursor-pointer group">
+                <summary class="flex items-center justify-between font-semibold text-brand-dark dark:text-white">
+                    <span>How long does a typical project take?</span>
+                    <span class="text-xl group-open:rotate-180 transition">▼</span>
+                </summary>
+                <p class="text-slate-600 dark:text-slate-300 mt-4">
+                    Project timelines vary from 2-3 weeks for small tasks to 6-12 months for comprehensive projects. We'll provide a detailed timeline during the initial consultation.
+                </p>
+            </details>
+
+            <!-- FAQ Item 5 -->
+            <details class="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-6 cursor-pointer group">
+                <summary class="flex items-center justify-between font-semibold text-brand-dark dark:text-white">
+                    <span>Are your solutions open source?</span>
+                    <span class="text-xl group-open:rotate-180 transition">▼</span>
+                </summary>
+                <p class="text-slate-600 dark:text-slate-300 mt-4">
+                    Yes! We are committed to open-source solutions. Our tools and datasets are accessible to the community, promoting transparency and collaboration.
+                </p>
+            </details>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

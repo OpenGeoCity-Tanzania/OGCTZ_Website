@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Our Services{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="py-20 bg-brand-dark overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Our Services</h1>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+                Comprehensive geospatial solutions tailored to meet the unique needs of cities, organizations, and communities.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-20 bg-white dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Service 1: Data Mapping -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-brand-primary/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-primary/30 transition">
+                    <span class="text-3xl">🗺️</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Geospatial Mapping</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Create detailed maps and spatial datasets with cutting-edge technology. From urban planning to resource management, we map what matters.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ High-resolution satellite imagery</li>
+                    <li>✓ Drone-based surveys</li>
+                    <li>✓ GPS & LiDAR positioning</li>
+                </ul>
+            </div>
+
+            <!-- Service 2: Data Analytics -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-brand-accent/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-accent/30 transition">
+                    <span class="text-3xl">📊</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Data Analytics</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Transform raw geo-data into actionable insights. Our analytics help you understand patterns and make data-driven decisions.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ Spatial analysis</li>
+                    <li>✓ Trend forecasting</li>
+                    <li>✓ Custom dashboards</li>
+                </ul>
+            </div>
+
+            <!-- Service 3: Urban Planning -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition">
+                    <span class="text-3xl">🏙️</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Urban Planning</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Comprehensive urban planning solutions using geospatial intelligence to design smart, sustainable cities.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ 3D city modeling</li>
+                    <li>✓ Land use planning</li>
+                    <li>✓ Infrastructure design</li>
+                </ul>
+            </div>
+
+            <!-- Service 4: Environmental Monitoring -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-green-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-500/30 transition">
+                    <span class="text-3xl">🌍</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Environmental Monitoring</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Track environmental changes and manage natural resources with precision geospatial monitoring systems.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ Vegetation mapping</li>
+                    <li>✓ Water resource monitoring</li>
+                    <li>✓ Climate impact assessment</li>
+                </ul>
+            </div>
+
+            <!-- Service 5: Training & Capacity Building -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition">
+                    <span class="text-3xl">🎓</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Training & Capacity Building</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Empower your team with comprehensive training in GIS, remote sensing, and geospatial analysis.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ GIS workshop series</li>
+                    <li>✓ Certification programs</li>
+                    <li>✓ Technical support</li>
+                </ul>
+            </div>
+
+            <!-- Service 6: Consulting -->
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition group">
+                <div class="w-14 h-14 bg-orange-500/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500/30 transition">
+                    <span class="text-3xl">💼</span>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Strategic Consulting</h3>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    Expert guidance for implementing geospatial solutions in your organization's strategic initiatives.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li>✓ Technology assessment</li>
+                    <li>✓ Implementation planning</li>
+                    <li>✓ Change management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-20 bg-slate-50 dark:bg-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-6">Why Choose OpenGeoCity?</h2>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-4">
+                        <span class="text-brand-primary text-xl flex-shrink-0">✓</span>
+                        <span class="text-slate-600 dark:text-slate-300">
+                            <strong>Local Expertise:</strong> Deep understanding of Tanzania's geographic and development context
+                        </span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-brand-primary text-xl flex-shrink-0">✓</span>
+                        <span class="text-slate-600 dark:text-slate-300">
+                            <strong>Open Source:</strong> Transparent, replicable, and community-driven solutions
+                        </span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-brand-primary text-xl flex-shrink-0">✓</span>
+                        <span class="text-slate-600 dark:text-slate-300">
+                            <strong>Affordable Solutions:</strong> Cost-effective services designed for local organizations
+                        </span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-brand-primary text-xl flex-shrink-0">✓</span>
+                        <span class="text-slate-600 dark:text-slate-300">
+                            <strong>Proven Track Record:</strong> Successfully delivered 20+ projects across Tanzania
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-brand-dark rounded-xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Request a Consultation</h3>
+                <p class="text-slate-300 mb-6">
+                    Let's discuss how our services can help your organization achieve its goals.
+                </p>
+                <a href="{{ url_for('contact') }}" class="inline-block px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-sky-600 transition">
+                    Get in Touch
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

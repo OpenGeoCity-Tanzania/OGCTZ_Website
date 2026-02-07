@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Resources{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="py-20 bg-brand-dark overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Resources & Learning</h1>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+                Access tools, documentation, articles, and tutorials to advance your geospatial knowledge.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Resources Section -->
+<section class="py-20 bg-white dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Documentation -->
+        <div class="mb-20">
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8">📚 Documentation</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <a href="#" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-brand-primary dark:hover:border-brand-primary hover:shadow-lg transition">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">GIS Fundamentals Guide</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Complete beginner's guide to understanding Geographic Information Systems.</p>
+                    <span class="text-brand-primary font-semibold text-sm">Read Documentation →</span>
+                </a>
+
+                <a href="#" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-brand-primary dark:hover:border-brand-primary hover:shadow-lg transition">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">API Reference</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Technical documentation for integrating our geospatial APIs into your applications.</p>
+                    <span class="text-brand-primary font-semibold text-sm">View API Docs →</span>
+                </a>
+
+                <a href="#" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-brand-primary dark:hover:border-brand-primary hover:shadow-lg transition">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">Data Standards</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Best practices and standards for geospatial data collection and management.</p>
+                    <span class="text-brand-primary font-semibold text-sm">View Standards →</span>
+                </a>
+
+                <a href="#" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-brand-primary dark:hover:border-brand-primary hover:shadow-lg transition">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">Tools & Software</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Recommended open-source tools for geospatial analysis and visualization.</p>
+                    <span class="text-brand-primary font-semibold text-sm">Explore Tools →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Blog & Articles -->
+        <div class="mb-20">
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8">📝 Articles & Blog</h2>
+            <div class="space-y-6">
+                <article class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-brand-dark dark:text-white">The Role of GIS in Urban Climate Resilience</h3>
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Jan 15, 2024</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">
+                        Explore how geographic information systems help cities prepare for and adapt to climate change impacts...
+                    </p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Read Full Article →</a>
+                </article>
+
+                <article class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-brand-dark dark:text-white">Remote Sensing for Agricultural Development in Tanzania</h3>
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Jan 8, 2024</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">
+                        How satellite imagery is transforming farming practices and improving crop yields across Tanzanian regions...
+                    </p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Read Full Article →</a>
+                </article>
+
+                <article class="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 border border-slate-200 dark:border-slate-700 hover:border-brand-primary dark:hover:border-brand-primary transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-brand-dark dark:text-white">Open Data: Unlocking Tanzania's Geospatial Potential</h3>
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Dec 28, 2023</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">
+                        The importance of open geospatial data for public decision-making and community empowerment...
+                    </p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Read Full Article →</a>
+                </article>
+            </div>
+        </div>
+
+        <!-- Video Tutorials -->
+        <div class="mb-20">
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8">🎥 Video Tutorials</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden group cursor-pointer">
+                    <div class="relative h-48 bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center text-5xl group-hover:scale-105 transition">
+                        ▶️
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-semibold text-brand-dark dark:text-white">QGIS Basics - Getting Started</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">15 mins</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden group cursor-pointer">
+                    <div class="relative h-48 bg-gradient-to-br from-brand-accent to-green-500 flex items-center justify-center text-5xl group-hover:scale-105 transition">
+                        ▶️
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-semibold text-brand-dark dark:text-white">Creating Interactive Web Maps</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">32 mins</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden group cursor-pointer">
+                    <div class="relative h-48 bg-gradient-to-br from-blue-500 to-brand-primary flex items-center justify-center text-5xl group-hover:scale-105 transition">
+                        ▶️
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-semibold text-brand-dark dark:text-white">Spatial Data Analysis with Python</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">45 mins</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datasets -->
+        <div class="mb-20">
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8">💾 Open Datasets</h2>
+            <div class="bg-brand-dark rounded-xl p-8">
+                <p class="text-slate-300 mb-6">Access our collection of open geospatial datasets for research, development, and innovation.</p>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-slate-800 p-4 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-white">Tanzania Administrative Boundaries</h4>
+                            <p class="text-sm text-slate-400">Shapefile | 2.4 MB</p>
+                        </div>
+                        <a href="#" class="px-4 py-2 bg-brand-primary text-white rounded hover:bg-sky-600 transition">Download</a>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-800 p-4 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-white">Urban Infrastructure Dataset</h4>
+                            <p class="text-sm text-slate-400">GeoJSON | 5.1 MB</p>
+                        </div>
+                        <a href="#" class="px-4 py-2 bg-brand-primary text-white rounded hover:bg-sky-600 transition">Download</a>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-800 p-4 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-white">Land Use & Land Cover Classification</h4>
+                            <p class="text-sm text-slate-400">GeoTIFF | 18.7 MB</p>
+                        </div>
+                        <a href="#" class="px-4 py-2 bg-brand-primary text-white rounded hover:bg-sky-600 transition">Download</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools & Software -->
+        <div>
+            <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-8">⚙️ Recommended Tools</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">QGIS</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Free and open-source desktop GIS application. Perfect for mapping and spatial analysis.</p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Visit Website →</a>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">PostGIS</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Spatial and geographic objects support for PostgreSQL database.</p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Visit Website →</a>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">Leaflet.js</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Lightweight JavaScript library for interactive web maps.</p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Visit Website →</a>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2">GeoPandas</h3>
+                    <p class="text-slate-600 dark:text-slate-300 mb-4">Python library extending pandas for geospatial data analysis.</p>
+                    <a href="#" class="text-brand-primary font-semibold text-sm hover:underline">Visit Website →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
