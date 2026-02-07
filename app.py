@@ -20,11 +20,11 @@ def inject_global_vars():
     return {
         "site_name": "OpenGeoCity Tanzania",
         "email": "info@ogctz.org",
-        "phone": "+255 700 000 000"
-    }
+        "phone": "+255 700 000 000",
+    
         "location": "Dodoma, Tanzania",
         "founded": "2021"
-    }
+    }   
 
 # Main Pages
 @app.route("/")
