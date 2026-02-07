@@ -10,7 +10,7 @@
 "></canvas>
 
 <style>
-    /* Adjust main content to be above canvas */
+    /* Adjust stacking so content sits above canvas */
     body {
         position: relative;
         z-index: 1;
@@ -19,18 +19,18 @@
     /* Ensure nav stays on top */
     nav {
         position: relative;
-        z-index: 50;
+        z-index: 60;
     }
 
     /* Ensure main and footer are above canvas */
     main {
         position: relative;
-        z-index: 1;
+        z-index: 50;
     }
 
     footer {
         position: relative;
-        z-index: 1;
+        z-index: 50;
     }
 
     /* Canvas adapts to dark mode */
