@@ -1,0 +1,40 @@
+<nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+            <div class="flex items-center">
+                <a href="{{ url_for('home') }}" class="flex-shrink-0 flex items-center gap-2 group">
+                    <div class="bg-brand-primary/10 p-2 rounded-lg group-hover:bg-brand-primary/20 transition">
+                         <svg class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold text-brand-dark tracking-tight">
+                        OpenGeoCity<span class="text-brand-primary">Tanzania</span>
+                    </span>
+                </a>
+            </div>
+
+            <div class="hidden md:flex md:items-center md:space-x-8">
+                <a href="{{ url_for('home') }}" class="text-slate-600 hover:text-brand-primary font-medium transition">Home</a>
+                <a href="{{ url_for('projects') }}" class="text-slate-600 hover:text-brand-primary font-medium transition">Projects</a>
+                <a href="#" class="px-5 py-2.5 bg-brand-dark text-white rounded-full font-medium hover:bg-slate-800 transition shadow-lg hover:shadow-brand-primary/25">Contact Us</a>
+            </div>
+
+            <div class="flex items-center md:hidden">
+                <button id="mobile-menu-btn" type="button" class="text-slate-500 hover:text-brand-dark focus:outline-none p-2">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="{{ url_for('home') }}" class="block px-3 py-4 text-base font-medium text-slate-700 hover:text-brand-primary hover:bg-slate-50 rounded-md">Home</a>
+            <a href="{{ url_for('projects') }}" class="block px-3 py-4 text-base font-medium text-slate-700 hover:text-brand-primary hover:bg-slate-50 rounded-md">Projects</a>
+            <a href="#" class="block px-3 py-4 text-base font-bold text-brand-primary hover:bg-slate-50 rounded-md">Contact Us</a>
+        </div>
+    </div>
+</nav>

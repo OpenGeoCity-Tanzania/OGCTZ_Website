@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="relative bg-brand-dark overflow-hidden min-h-[600px] flex items-center">
+    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-brand-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-brand-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
+        <span class="inline-block py-1 px-3 rounded-full bg-brand-primary/10 text-brand-primary text-sm font-semibold mb-6 border border-brand-primary/20">
+            Smart Solutions, Bright Futures
+        </span>
+        <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">
+            Pioneering <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent">Geospatial Innovation</span> <br> in Tanzania
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-300 mb-10">
+            We bridge the gap between traditional urban planning and modern data science to build resilient, smart cities.
+        </p>
+        <div class="flex justify-center gap-4">
+            <a href="{{ url_for('projects') }}" class="px-8 py-4 bg-brand-primary text-white rounded-lg font-bold hover:bg-sky-600 transition shadow-[0_0_20px_rgba(14,165,233,0.3)]">
+                View Projects
+            </a>
+            <a href="#" class="px-8 py-4 bg-transparent border border-slate-600 text-white rounded-lg font-bold hover:bg-white/5 transition">
+                Our Mission
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="py-12 bg-white border-b border-slate-100">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+            <div class="text-3xl font-bold text-brand-dark">30+</div>
+            <div class="text-sm text-slate-500 mt-1">Districts Mapped</div>
+        </div>
+        <div>
+            <div class="text-3xl font-bold text-brand-dark">15K+</div>
+            <div class="text-sm text-slate-500 mt-1">Data Points</div>
+        </div>
+        <div>
+            <div class="text-3xl font-bold text-brand-dark">100%</div>
+            <div class="text-sm text-slate-500 mt-1">Open Source</div>
+        </div>
+        <div>
+            <div class="text-3xl font-bold text-brand-dark">5</div>
+            <div class="text-sm text-slate-500 mt-1">Global Partners</div>
+        </div>
+    </div>
+</section>
+{% endblock %}
