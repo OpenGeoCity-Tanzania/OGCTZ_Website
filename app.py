@@ -116,6 +116,10 @@ def gis_course():
 def gis_course():
     return render_template("gis_course/gis_course.html", page_title="GIS Fundamentals Guide")
 
+@app.route("/gis-course/module-1", methods=["GET"])
+def module_one():
+    return render_template("gis_course/module_one.html", page_title="Module 1: GIS Fundamentals")
+
 @app.route('/login/google')
 def login_google():
     if not google:
