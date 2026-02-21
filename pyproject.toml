@@ -9,7 +9,10 @@ description = "OpenGeoCity Web Frontend"
 requires-python = ">=3.12"
 dependencies = [
     "Flask>=3.1.2",
-    "flask-cors>=6.0.2"
+    "flask-cors>=6.0.2",
+    "authlib",
+    "requests",
+    "python-dotenv"
 ]
 
 [tool.setuptools]
