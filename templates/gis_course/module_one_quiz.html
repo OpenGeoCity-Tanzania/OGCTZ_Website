@@ -98,15 +98,17 @@
         cursor: pointer;
         display: flex;
         align-items: center;
+        margin: 0;
     }
 
+    /* Style checked option */
+    .option input[type="radio"]:checked {
+        accent-color: #27ae60;
+    }
+    
     .option input[type="radio"]:checked + label {
         color: #27ae60;
         font-weight: bold;
-    }
-
-    .option input[type="radio"]:checked {
-        accent-color: #27ae60;
     }
 
     .submit-container {
@@ -168,7 +170,7 @@
         <div class="progress-bar">
             <div class="progress-fill" id="progressBar"></div>
         </div>
-        <p id="questionCounter">Question 1 of 10</p>
+        <p id="questionCounter">0 of {{ questions|length }} answered</p>
     </div>
 
     <div class="info-box">
@@ -180,19 +182,19 @@
         <div class="question-block">
             <div class="question-number">Question {{ loop.index }}/{{ questions|length }}</div>
             <div class="question-text">{{ question.text }}</div>
-            <div>
+            <fieldset style="border: none; padding: 0; margin: 0;">
                 {% for option in question.options %}
                 <div class="option">
-                    <input type="radio" id="{{ question.id }}_{{ option.value }}" name="{{ question.id }}" value="{{ option.value }}">
+                    <input type="radio" id="{{ question.id }}_{{ option.value }}" name="{{ question.id }}" value="{{ option.value }}" required>
                     <label for="{{ question.id }}_{{ option.value }}">{{ option.label }}</label>
                 </div>
                 {% endfor %}
-            </div>
+            </fieldset>
         </div>
         {% endfor %}
 
         <div class="submit-container">
-            <button type="submit" class="submit-btn" onclick="updateProgress()">
+            <button type="submit" class="submit-btn">
                 ✓ Submit Quiz
             </button>
         </div>
@@ -205,16 +207,14 @@
 
 <script>
     const totalQuestions = {{ questions|length }};
+    const questionIds = [{% for q in questions %}'{{ q.id }}'{{ "," if not loop.last else "" }}{% endfor %}];
     
     function updateProgress() {
-        const form = document.getElementById('quizForm');
         let answered = 0;
         
         // Count answered questions by checking all radio buttons
-        const questionIds = [{% for q in questions %}'{{ q.id }}'{{ "," if not loop.last else "" }}{% endfor %}];
-        
         questionIds.forEach(qId => {
-            const checked = form.querySelector(`input[name="${qId}"]:checked`);
+            const checked = document.querySelector(`input[name="${qId}"]:checked`);
             if (checked) answered++;
         });
         
@@ -228,9 +228,11 @@
         radio.addEventListener('change', updateProgress);
     });
 
+    // Initialize progress on page load
+    document.addEventListener('DOMContentLoaded', updateProgress);
+
     // Validate before submit
     document.getElementById('quizForm').addEventListener('submit', function(e) {
-        const questionIds = [{% for q in questions %}'{{ q.id }}'{{ "," if not loop.last else "" }}{% endfor %}];
         let allAnswered = true;
         
         questionIds.forEach(qId => {
