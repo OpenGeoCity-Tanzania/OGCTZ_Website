@@ -321,6 +321,13 @@ def authorize_google():
             resp = oauth.google.get('userinfo', token=token)
             user = resp.json()
         
+        # Store user info in session
+        session['user'] = {
+            'name': user.get('name', 'User'),
+            'email': user.get('email'),
+            'picture': user.get('picture')
+        }
+        
         print(f"Google OAuth successful for user: {user.get('email')}")
         # user contains: sub, name, email, picture, etc.
         # Here you would store user info and send email if needed
@@ -343,7 +350,15 @@ def authorize_github():
         token = oauth.github.authorize_access_token()
         resp = oauth.github.get('user', token=token)
         user = resp.json()
-        # user contains: login, id, name, email, etc.
+        
+        # Store user info in session
+        session['user'] = {
+            'name': user.get('name') or user.get('login', 'User'),
+            'email': user.get('email'),
+            'picture': user.get('avatar_url')
+        }
+        
+        # user contains: login, id, name, email, avatar_url, etc.
         # Here you would store user info and send email if needed
         return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
     except Exception as e:

@@ -4,11 +4,30 @@
 
 {% block content %}
 <div class="max-w-xl mx-auto py-20 px-4 text-center">
-    <h1 class="text-3xl font-bold mb-6 text-green-700 dark:text-green-400">Registration Successful!</h1>
-    <p class="mb-4">Thank you for registering for the GIS Fundamentals Course. You can now start Module 1 below.</p>
-    <a href="{{ url_for('module_one') }}" class="inline-block mt-6 px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-sky-600 transition">Start Module 1: GIS Fundamentals →</a>
+    <!-- Profile Picture (if available) -->
+    {% if user.picture %}
+    <div class="mb-6 flex justify-center">
+        <img src="{{ user.picture }}" alt="{{ user.name or 'User' }}" class="w-20 h-20 rounded-full border-4 border-brand-primary shadow-lg">
+    </div>
+    {% endif %}
+    
+    <h1 class="text-4xl font-bold mb-2 text-green-700 dark:text-green-400">
+        Welcome, <span class="text-brand-primary">{{ user.name or 'User' }}!</span>
+    </h1>
+    <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">We're excited to have you here 🎉</p>
+    
+    <p class="mb-6 text-slate-700 dark:text-slate-200">Thank you for registering for the GIS Fundamentals Course. You can now start Module 1 below and begin your journey into the world of Geographic Information Systems.</p>
+    
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6 text-left">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+            <span class="font-semibold">📧 Email:</span> {{ user.email or 'Not provided' }}
+        </p>
+    </div>
+    
+    <a href="{{ url_for('module_one') }}" class="inline-block mt-6 px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-sky-600 transition shadow-lg">Start Module 1: GIS Fundamentals →</a>
+    
     <div class="mt-8">
-        <a href="{{ url_for('gis_course') }}" class="text-brand-primary underline">Back to Course Landing</a>
+        <a href="{{ url_for('gis_course') }}" class="text-brand-primary underline hover:text-sky-600 transition">Back to Course Landing</a>
     </div>
 </div>
 {% endblock %}
