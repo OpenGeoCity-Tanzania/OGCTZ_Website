@@ -367,6 +367,14 @@ def authorize_github():
         return redirect(url_for("gis_course"))
 
 
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('gis_course'))
+
+
 # Sitemap and robots
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():

@@ -106,7 +106,10 @@
                     👋 Welcome back, <span class="font-bold">{{ session.user.name }}</span>!
                 </p>
             </div>
-            <a href="{{ url_for('module_one') }}" class="text-xs md:text-sm px-3 py-1.5 bg-white text-brand-primary rounded-full font-semibold hover:bg-slate-100 transition">Continue Learning</a>
+            <div class="flex items-center gap-2">
+                <a href="{{ url_for('module_one') }}" class="text-xs md:text-sm px-3 py-1.5 bg-white text-brand-primary rounded-full font-semibold hover:bg-slate-100 transition">Continue Learning</a>
+                <a href="{{ url_for('logout') }}" class="text-xs md:text-sm px-3 py-1.5 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition">Logout</a>
+            </div>
         </div>
     </div>
     {% endif %}
