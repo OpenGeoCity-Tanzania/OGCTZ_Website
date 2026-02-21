@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ## ...existing code...
-from flask import Flask, render_template, request, flash, redirect, url_for, Response
+from flask import Flask, render_template, request, flash, redirect, url_for, Response, session
 import os
 from authlib.integrations.flask_client import OAuth
+import random
 
 # Absolute path of current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +56,120 @@ else:
 
 # Secret key (use env variable on Vercel)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+
+# Quiz Questions Database
+MODULE_ONE_QUESTIONS = [
+    {
+        'id': 'q1',
+        'text': 'What is a datum in geodesy?',
+        'options': [
+            {'label': 'A smooth mathematical surface that approximates the geoid', 'value': 'a'},
+            {'label': 'A specific version of an ellipsoid anchored to Earth for regional accuracy', 'value': 'b'},
+            {'label': 'The geographic coordinate system for Earth', 'value': 'c'},
+            {'label': 'A method of simplifying map data', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q2',
+        'text': 'WGS84 is used globally because:',
+        'options': [
+            {'label': 'Its center is anchored at a local point for maximum accuracy', 'value': 'a'},
+            {'label': 'Its center is Earth\'s center of mass, making it good for the whole planet and used by GPS', 'value': 'b'},
+            {'label': 'It\'s the oldest datum still in use', 'value': 'c'},
+            {'label': 'It eliminates the need for coordinate transformations', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q3',
+        'text': 'What is the main difference between Geographic Coordinate Systems (GCS) and Projected Coordinate Systems (PCS)?',
+        'options': [
+            {'label': 'GCS uses degrees, PCS uses meters; GCS is spherical, PCS is planar', 'value': 'a'},
+            {'label': 'GCS is more accurate than PCS', 'value': 'b'},
+            {'label': 'PCS is only used for local mapping', 'value': 'c'},
+            {'label': 'GCS cannot be used with GPS data', 'value': 'd'},
+        ],
+        'correct': 'a'
+    },
+    {
+        'id': 'q4',
+        'text': 'Tanzania spans which two UTM zones?',
+        'options': [
+            {'label': 'UTM Zone 35S and 36S', 'value': 'a'},
+            {'label': 'UTM Zone 36S and 37S', 'value': 'b'},
+            {'label': 'UTM Zone 37S and 38S', 'value': 'c'},
+            {'label': 'Tanzania only uses one UTM zone', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q5',
+        'text': 'Which data model is best for representing continuous phenomena like elevation or temperature?',
+        'options': [
+            {'label': 'Vector (points, lines, polygons)', 'value': 'a'},
+            {'label': 'Raster (grid of pixels)', 'value': 'b'},
+            {'label': 'Only attribute tables', 'value': 'c'},
+            {'label': 'Topological networks', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q6',
+        'text': 'In vector data, which geometry type would you use to represent a forest?',
+        'options': [
+            {'label': 'Point', 'value': 'a'},
+            {'label': 'Line', 'value': 'b'},
+            {'label': 'Polygon', 'value': 'c'},
+            {'label': 'All of the above depending on scale', 'value': 'd'},
+        ],
+        'correct': 'c'
+    },
+    {
+        'id': 'q7',
+        'text': 'What is the relationship between spatial data and attribute data in GIS?',
+        'options': [
+            {'label': 'They are the same thing', 'value': 'a'},
+            {'label': 'Spatial shows location; attribute shows properties. A unique ID links them via a table', 'value': 'b'},
+            {'label': 'Only spatial data is used in professional GIS', 'value': 'c'},
+            {'label': 'Attribute data is unnecessary for GIS analysis', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q8',
+        'text': 'What is map generalization?',
+        'options': [
+            {'label': 'The process of creating maps that work for all purposes', 'value': 'a'},
+            {'label': 'Simplifying data for display at smaller scales (selection, simplification, aggregation)', 'value': 'b'},
+            {'label': 'Adding more detail to maps', 'value': 'c'},
+            {'label': 'A method of error correction', 'value': 'd'},
+        ],
+        'correct': 'b'
+    },
+    {
+        'id': 'q9',
+        'text': 'Why would you use a projected coordinate system (like UTM) instead of a geographic coordinate system (lat/lon) for measuring distances?',
+        'options': [
+            {'label': 'Projected systems use meters, allowing accurate distance measurements on a flat map', 'value': 'a'},
+            {'label': 'Geographic systems cannot measure distances', 'value': 'b'},
+            {'label': 'Projected systems are always more accurate', 'value': 'c'},
+            {'label': 'They give the same results; the choice doesn\'t matter', 'value': 'd'},
+        ],
+        'correct': 'a'
+    },
+    {
+        'id': 'q10',
+        'text': 'A large-scale map (e.g., 1:1,000) shows _____, while a small-scale map (e.g., 1:1,000,000) shows _____:',
+        'options': [
+            {'label': 'A small area with great detail; a large area with minimal detail', 'value': 'a'},
+            {'label': 'A large area with great detail; a small area with minimal detail', 'value': 'b'},
+            {'label': 'The same area but different projections', 'value': 'c'},
+            {'label': 'Different datums for the same area', 'value': 'd'},
+        ],
+        'correct': 'a'
+    },
+]
 
 # Global variables for templates
 @app.context_processor
@@ -117,50 +232,54 @@ def module_one():
 
 @app.route("/gis-course/module-1/quiz", methods=["GET"])
 def module_one_quiz():
-    return render_template("gis_course/module_one_quiz.html", page_title="Module 1 Quiz")
+    # Randomize questions for this session
+    shuffled_questions = MODULE_ONE_QUESTIONS.copy()
+    random.shuffle(shuffled_questions)
+    
+    # Store shuffled questions in session
+    session['quiz_questions'] = shuffled_questions
+    
+    return render_template("gis_course/module_one_quiz.html", page_title="Module 1 Quiz", questions=shuffled_questions)
 
 @app.route("/gis-course/module-1/quiz/submit", methods=["POST"])
 def module_one_quiz_submit():
     try:
-        # Answer key for Module 1 Quiz
-        answer_key = {
-            'q1': 'b',  # Datum definition
-            'q2': 'b',  # WGS84
-            'q3': 'a',  # GCS vs PCS
-            'q4': 'b',  # Tanzania UTM zones
-            'q5': 'b',  # Raster for continuous
-            'q6': 'c',  # Polygon for forest
-            'q7': 'b',  # Spatial + Attribute link
-            'q8': 'b',  # Generalization
-            'q9': 'a',  # Projected for distance
-            'q10': 'a', # Large vs small scale
-        }
+        # Create answer key from original questions
+        answer_key = {q['id']: q['correct'] for q in MODULE_ONE_QUESTIONS}
         
         # Score the quiz
         score = 0
         results = {}
         
-        for q, correct_answer in answer_key.items():
-            user_answer = request.form.get(q)
+        for question in MODULE_ONE_QUESTIONS:
+            q_id = question['id']
+            user_answer = request.form.get(q_id)
+            correct_answer = answer_key[q_id]
             is_correct = user_answer == correct_answer
-            results[q] = {
+            
+            results[q_id] = {
                 'user_answer': user_answer,
                 'correct_answer': correct_answer,
-                'is_correct': is_correct
+                'is_correct': is_correct,
+                'question_text': question['text']
             }
+            
             if is_correct:
                 score += 1
         
-        percentage = (score / len(answer_key)) * 100
+        percentage = (score / len(MODULE_ONE_QUESTIONS)) * 100
         passed = percentage >= 70
         
-        print(f"Quiz submitted - Score: {score}/{len(answer_key)}, Percentage: {percentage}%, Passed: {passed}")
+        print(f"Quiz submitted - Score: {score}/{len(MODULE_ONE_QUESTIONS)}, Percentage: {percentage}%, Passed: {passed}")
+        
+        # Clear quiz questions from session
+        session.pop('quiz_questions', None)
         
         return render_template(
             "gis_course/module_one_quiz_results.html",
             page_title="Quiz Results",
             score=score,
-            total=len(answer_key),
+            total=len(MODULE_ONE_QUESTIONS),
             percentage=percentage,
             passed=passed,
             results=results

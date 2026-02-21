@@ -211,7 +211,7 @@
 
         {% if percentage < 100 %}
         <div class="passing-score">
-            <strong>📝 To Pass:</strong> You need {{ 7 - score }} more correct answers (70% = 7/10)
+            <strong>📝 To Pass:</strong> You need {{ (total * 0.7)|round(0, 'ceil')|int - score }} more correct answers (70% = {{ (total * 0.7)|round(0, 'ceil')|int }}/{{ total }})
         </div>
         {% endif %}
     </div>
@@ -243,7 +243,7 @@
                 {% else %}
                     <span class="icon">❌</span>
                 {% endif %}
-                Question {{ loop.index }}
+                {{ question_id }}: {{ result.question_text }}
             </div>
             
             <div class="answer-row user">
