@@ -248,13 +248,13 @@
             
             <div class="answer-row user">
                 <span class="answer-label">Your Answer:</span>
-                <span>{{ ["A", "B", "C", "D"][ord(result.user_answer) - ord('a')] if result.user_answer else 'Not answered' }}</span>
+                <span>{% if result.user_answer %}{{ result.user_answer|upper }}{% else %}Not answered{% endif %}</span>
             </div>
             
             {% if not result.is_correct %}
             <div class="answer-row correct">
                 <span class="answer-label">Correct Answer:</span>
-                <span>{{ ["A", "B", "C", "D"][ord(result.correct_answer) - ord('a')] }}</span>
+                <span>{{ result.correct_answer|upper }}</span>
             </div>
             {% endif %}
         </div>

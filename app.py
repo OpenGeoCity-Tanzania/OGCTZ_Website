@@ -121,45 +121,56 @@ def module_one_quiz():
 
 @app.route("/gis-course/module-1/quiz/submit", methods=["POST"])
 def module_one_quiz_submit():
-    # Answer key for Module 1 Quiz
-    answer_key = {
-        'q1': 'b',  # Datum definition
-        'q2': 'b',  # WGS84
-        'q3': 'a',  # GCS vs PCS
-        'q4': 'b',  # Tanzania UTM zones
-        'q5': 'b',  # Raster for continuous
-        'q6': 'c',  # Polygon for forest
-        'q7': 'b',  # Spatial + Attribute link
-        'q8': 'b',  # Generalization
-        'q9': 'a',  # Projected for distance
-        'q10': 'a', # Large vs small scale
-    }
-    
-    # Score the quiz
-    score = 0
-    results = {}
-    for q, correct_answer in answer_key.items():
-        user_answer = request.form.get(q)
-        results[q] = {
-            'user_answer': user_answer,
-            'correct_answer': correct_answer,
-            'is_correct': user_answer == correct_answer
+    try:
+        # Answer key for Module 1 Quiz
+        answer_key = {
+            'q1': 'b',  # Datum definition
+            'q2': 'b',  # WGS84
+            'q3': 'a',  # GCS vs PCS
+            'q4': 'b',  # Tanzania UTM zones
+            'q5': 'b',  # Raster for continuous
+            'q6': 'c',  # Polygon for forest
+            'q7': 'b',  # Spatial + Attribute link
+            'q8': 'b',  # Generalization
+            'q9': 'a',  # Projected for distance
+            'q10': 'a', # Large vs small scale
         }
-        if user_answer == correct_answer:
-            score += 1
-    
-    percentage = (score / len(answer_key)) * 100
-    passed = percentage >= 70
-    
-    return render_template(
-        "gis_course/module_one_quiz_results.html",
-        page_title="Quiz Results",
-        score=score,
-        total=len(answer_key),
-        percentage=percentage,
-        passed=passed,
-        results=results
-    )
+        
+        # Score the quiz
+        score = 0
+        results = {}
+        
+        for q, correct_answer in answer_key.items():
+            user_answer = request.form.get(q)
+            is_correct = user_answer == correct_answer
+            results[q] = {
+                'user_answer': user_answer,
+                'correct_answer': correct_answer,
+                'is_correct': is_correct
+            }
+            if is_correct:
+                score += 1
+        
+        percentage = (score / len(answer_key)) * 100
+        passed = percentage >= 70
+        
+        print(f"Quiz submitted - Score: {score}/{len(answer_key)}, Percentage: {percentage}%, Passed: {passed}")
+        
+        return render_template(
+            "gis_course/module_one_quiz_results.html",
+            page_title="Quiz Results",
+            score=score,
+            total=len(answer_key),
+            percentage=percentage,
+            passed=passed,
+            results=results
+        )
+    except Exception as e:
+        print(f"Quiz submission error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        flash(f"Error submitting quiz: {str(e)}", "error")
+        return redirect(url_for("module_one_quiz"))
 
 @app.route('/login/google')
 def login_google():
