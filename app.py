@@ -138,7 +138,13 @@ def authorize_google():
         return redirect(url_for("home"))
     try:
         token = oauth.google.authorize_access_token()
-        user = oauth.google.parse_id_token(token)
+        # In OpenID Connect flow, user info is in the token's id_token
+        user = token.get('userinfo')
+        if not user:
+            # Fallback: fetch from userinfo endpoint
+            resp = oauth.google.get('userinfo', token=token)
+            user = resp.json()
+        
         print(f"Google OAuth successful for user: {user.get('email')}")
         # user contains: sub, name, email, picture, etc.
         # Here you would store user info and send email if needed
