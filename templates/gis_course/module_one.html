@@ -3,90 +3,435 @@
 {% block title %}Module 1: GIS Fundamentals{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-10 px-4">
-    <h1 class="text-3xl font-bold mb-6">Module 1: GIS Fundamentals – The Science of Representation</h1>
-    <p class="mb-4"><strong>Core Question:</strong> How do we accurately capture the infinite complexity of the real world and store it inside a finite computer?</p>
+<style>
+    .book-container {
+        background: linear-gradient(135deg, #f5f1e8 0%, #fefdfb 100%);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        border-left: 8px solid #8b7355;
+    }
+    
+    .book-page {
+        padding: 40px;
+        line-height: 1.8;
+        color: #333;
+        font-family: 'Georgia', serif;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+    
+    .book-page h1 {
+        font-size: 2.5em;
+        color: #2c3e50;
+        text-align: center;
+        border-bottom: 3px solid #8b7355;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        font-family: 'Georgia', serif;
+    }
+    
+    .book-page h2 {
+        font-size: 1.8em;
+        color: #34495e;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-left: 5px solid #e74c3c;
+        padding-left: 15px;
+        font-family: 'Georgia', serif;
+    }
+    
+    .section-number {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+    
+    .key-concept {
+        background: #ecf0f1;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+    
+    .example-box {
+        background: #e8f4f8;
+        border: 2px dashed #16a085;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+    
+    .example-box strong {
+        color: #16a085;
+    }
+    
+    .learning-objective {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+    
+    .quiz-button-container {
+        text-align: center;
+        margin: 40px 0;
+    }
+    
+    .quiz-button {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        padding: 15px 40px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .quiz-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+    
+    .page-number {
+        text-align: center;
+        margin-top: 30px;
+        color: #95a5a6;
+        font-style: italic;
+    }
+    
+    .summary-box {
+        background: #d5f4e6;
+        border: 2px solid #27ae60;
+        padding: 25px;
+        margin: 30px 0;
+        border-radius: 4px;
+    }
+    
+    .summary-box h3 {
+        color: #27ae60;
+        margin-top: 0;
+    }
+    
+    ul.styled-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    ul.styled-list li {
+        padding-left: 30px;
+        margin: 12px 0;
+        position: relative;
+    }
+    
+    ul.styled-list li:before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: #e74c3c;
+        font-weight: bold;
+    }
+</style>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">1. Geodesy: The Foundation of Location</h2>
-    <p>Before we can map anything, we need a mathematical understanding of the Earth's shape.</p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>The Problem:</strong> The Earth is not a perfect sphere. It's an irregular shape called a geoid (a bumpy, lumpy ball defined by mean sea level). This is too complex for calculations.</li>
-        <li><strong>The Solution: The Ellipsoid (or Spheroid)</strong> – A smooth, mathematical surface that approximates the geoid. Defined by flattening the poles (squashing a sphere). Think of it as the "smooth skin" we wrap around the bumpy Earth for calculations.</li>
-        <li><strong>The Next Problem:</strong> A perfect ellipsoid doesn't fit every part of the Earth equally well. An ellipsoid that fits North America perfectly will be "off" in Tanzania.</li>
-        <li><strong>The Solution: The Datum</strong> – A datum is a specific version of an ellipsoid that is fixed to the Earth at a particular point to provide the best possible fit for a specific region. It acts as the starting point (the "0,0,0") for all coordinates.</li>
-    </ul>
-    <p class="mb-2"><strong>Key Datums:</strong></p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>WGS84 (World Geodetic System 1984):</strong> The global standard. It's the datum used by GPS. Its center is the Earth's center of mass, making it good for the whole planet, but not the absolute best for any single location.</li>
-        <li><strong>Local Tanzanian Datums:</strong> Before GPS, Tanzania (and much of East Africa) was mapped using local datums for better local accuracy.</li>
-        <li><strong>Arc 1960 / UTM:</strong> A common local datum for East Africa. Its ellipsoid (Clarke 1880) is oriented to fit the African continent best. Coordinates for the same physical point on the ground will be different in WGS84 vs. Arc 1960.</li>
-        <li><strong>Datum Shift:</strong> When using old paper maps with modern GPS devices, you must know the datum of the map and apply a datum transformation (shift) to align the data correctly.</li>
-    </ul>
+<div class="book-container">
+    <div class="book-page">
+        <h1>📚 Module 1: GIS Fundamentals</h1>
+        <p style="text-align: center; font-size: 1.2em; color: #7f8c8d; margin-bottom: 30px;">
+            <em>The Science of Capturing and Representing the Real World in a Computer</em>
+        </p>
+        
+        <div class="learning-objective">
+            <strong>🎯 Learning Objectives:</strong>
+            <p>By the end of this module, you will understand:</p>
+            <ul class="styled-list">
+                <li>How the Earth's shape is mathematically defined for mapping</li>
+                <li>The difference between geographic and projected coordinate systems</li>
+                <li>How spatial and attribute data work together in GIS</li>
+                <li>Why scale and generalization matter in mapmaking</li>
+                <li>How to represent real-world features digitally using vectors and rasters</li>
+            </ul>
+        </div>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">2. Coordinate Reference Systems (CRS): The Language of Location</h2>
-    <p>A CRS tells the computer how to interpret a set of numbers (e.g., -6.172, 39.201) as a specific place on Earth. There are two main types:</p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>Geographic Coordinate Systems (GCS):</strong> Spherical (3D), units in degrees, uses latitude and longitude on a 3D ellipsoid. Analogy: Like giving an address as "the corner of 5th and Main". Weakness: You cannot accurately measure distances or areas on a flat map using unprojected lat/long coordinates.</li>
-        <li><strong>Projected Coordinate Systems (PCS):</strong> Planar/Flat (2D), units in meters/feet, uses a mathematical model (map projection) to flatten the 3D GCS onto a 2D plane. Analogy: Like peeling an orange and trying to flatten the peel. Key system for Tanzania: Universal Transverse Mercator (UTM).</li>
-    </ul>
-    <p class="mb-2"><strong>UTM Zones for Tanzania:</strong></p>
-    <ul class="list-disc ml-6 mb-2">
-        <li>UTM Zone 36S: Covers western Tanzania.</li>
-        <li>UTM Zone 37S: Covers eastern Tanzania (including Dar es Salaam and Zanzibar).</li>
-    </ul>
-    <p>Why use UTM? It allows you to calculate accurate distances (in meters) and areas, which is essential for practical work like measuring farm plots or road lengths.</p>
+        <div class="key-concept">
+            <strong>🤔 Core Question:</strong>
+            <p>How do we accurately capture the infinite complexity of the real world and store it inside a finite computer?</p>
+        </div>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">3. Data Models: How We Store the World</h2>
-    <p>This is the "digital skin" of the map. How do we represent a river or a mountain in a database?</p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>Vector Data Model:</strong> Best for discrete, well-defined objects. Components: Points (0D), Lines (1D), Polygons (2D).</li>
-        <li><strong>Raster Data Model:</strong> Best for continuous, flowing phenomena. Components: A grid of equally sized cells (pixels). Each cell has a single value.</li>
-    </ul>
-    <p class="mb-2"><strong>Examples:</strong></p>
-    <ul class="list-disc ml-6 mb-2">
-        <li>Point: A tree, a well, a city on a small-scale map.</li>
-        <li>Line: A river, a road, a pipeline.</li>
-        <li>Polygon: A lake, a country border, a land-use zone.</li>
-        <li>Satellite Imagery: Each pixel value is the brightness/color.</li>
-        <li>Elevation (DEM): Each pixel value is the height of the ground.</li>
-        <li>Temperature Maps: Each pixel value is the degrees.</li>
-    </ul>
+        <!-- SECTION 1 -->
+        <h2><span class="section-number">1</span>Geodesy: The Foundation of Location</h2>
+        
+        <p><strong>Definition:</strong> Geodesy is the science of measuring Earth's shape and size. It's the foundation for all mapping because before we can map anything, we need to answer: "What is the Earth?"</p>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">4. Attribute Data: Giving Life to Shapes</h2>
-    <p>A shape on a map is just a shape until you attach information to it. This is the power of a Geographic Information System.</p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>The Concept:</strong> GIS links two types of data: Spatial Data (the .shp file) and Attribute Data (the .dbf file).</li>
-        <li><strong>The Link:</strong> A unique ID in the spatial file connects each feature to a specific row in the attribute table.</li>
-    </ul>
-    <p class="mb-2"><strong>Example (A Village Well):</strong></p>
-    <ul class="list-disc ml-6 mb-2">
-        <li>Spatial Data: A point located at coordinates (X, Y).</li>
-        <li>Attribute Data (Table Row): ID, Type, Depth (m), Water Quality, Date Inspected.</li>
-    </ul>
-    <p>This allows you to ask questions like, "Show me all wells with 'Good' water quality that are deeper than 40 meters."</p>
+        <div class="example-box">
+            <strong>🌍 Real-World Scenario:</strong>
+            <p>Imagine you're holding a GPS unit in Dar es Salaam. You get coordinates: <code>-6.8, 39.3</code>. But coordinates from where? On which Earth model? Without geodesy, these numbers would be meaningless.</p>
+        </div>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">5. Scale & Generalization: Managing the Detail</h2>
-    <p>Map scale is the ratio between distance on the map and distance on the ground. It dictates how much detail you can (and should) show.</p>
-    <ul class="list-disc ml-6 mb-2">
-        <li><strong>Large Scale (e.g., 1:1,000):</strong> Shows a small area with great detail. (Think: a map of a single village).</li>
-        <li><strong>Small Scale (e.g., 1:1,000,000):</strong> Shows a large area with less detail. (Think: a map of all of Tanzania).</li>
-        <li><strong>Generalization:</strong> The process of simplifying data for display at smaller scales. You cannot show every house in Tanzania on a map of Africa.</li>
-    </ul>
-    <p class="mb-2"><strong>Techniques of Generalization:</strong></p>
-    <ul class="list-disc ml-6 mb-2">
-        <li>Selection: Choosing only the most important features (e.g., only major highways, not dirt roads).</li>
-        <li>Simplification: Reducing the number of points in a line to make it less "wiggly" (e.g., smoothing a coastline).</li>
-        <li>Aggregation: Merging individual houses into a single polygon to represent a city neighborhood.</li>
-    </ul>
+        <h3>The Problem: The Earth Isn't a Sphere</h3>
+        <p>The Earth is an irregular shape called a <strong>geoid</strong>—a bumpy, lumpy ball shaped by mean sea level. It's defined by gravity, not mathematics, making it impossible to use directly for calculations.</p>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-2">Summary for Revision</h2>
-    <ul class="list-disc ml-6 mb-2">
-        <li>Geodesy: We use a datum (like WGS84 or Arc 1960) to anchor an ellipsoid to the Earth for accurate measurement.</li>
-        <li>CRS: We store locations in a Geographic system (lat/lon), but we display and measure them in a Projected system (like UTM Zone 37S) to get correct distances in meters.</li>
-        <li>Data Models: We use Vector (points/lines/polygons) for discrete objects and Raster (grid of pixels) for continuous surfaces.</li>
-        <li>Attribute Data: This is the "information" that is linked to the "location" via a table, enabling real-world analysis.</li>
-        <li>Scale: The level of detail on a map is controlled by its scale. Generalization is the art of simplifying information as you move from large-scale (detailed) to small-scale (overview) maps.</li>
-    </ul>
-    <p class="mb-4"><strong>Study Tip:</strong> Think of a familiar place (e.g., your university campus or a local market). How would you represent it using vector data? What would be points, lines, and polygons? What attributes would you store for each? This mental exercise solidifies the concepts.</p>
+        <div class="key-concept">
+            <strong>Visual Analogy:</strong> Imagine an orange. The gravitational bumps and lumps on Earth are like the uneven texture of the orange peel. You can't do math with that.
+        </div>
+
+        <h3>Solution 1: The Ellipsoid (or Spheroid)</h3>
+        <p>An <strong>ellipsoid</strong> is a smooth, mathematical surface that approximates the geoid. It's created by rotating an ellipse around the Earth's axis, flattening the poles.</p>
+
+        <ul class="styled-list">
+            <li><strong>What it is:</strong> A mathematical shape that is "good enough" but not perfect</li>
+            <li><strong>Visual analogy:</strong> Like wrapping a smooth rubber skin around the bumpy orange</li>
+            <li><strong>Advantage:</strong> You can do math with it</li>
+            <li><strong>Disadvantage:</strong> It's still not perfectly accurate everywhere</li>
+        </ul>
+
+        <h3>Solution 2: The Datum</h3>
+        <p>A <strong>datum</strong> is a specific version of an ellipsoid that is anchored (fixed) to the Earth at a particular point to provide the best possible fit for a specific region.</p>
+
+        <div class="key-concept">
+            <strong>Think of it as:</strong> A datum is the "starting point" (the 0,0,0) for all coordinates in a region. Choose the wrong datum, and all your coordinates will be systematically wrong.
+        </div>
+
+        <div class="example-box">
+            <strong>📍 Example: Why Datum Matters</strong>
+            <p>The same physical location on the ground has DIFFERENT coordinates depending on the datum:</p>
+            <ul style="margin: 10px 0;">
+                <li><strong>WGS84 (GPS standard):</strong> -6.8023°, 39.2788° (Dar es Salaam)</li>
+                <li><strong>Arc 1960 (old East African standard):</strong> 9,249,753 m, 10,023,456 m (UTM coordinates)</li>
+            </ul>
+            <p>Both point to the same place! But if you use WGS84 coordinates on a map made in Arc 1960, you could be off by 200+ meters.</p>
+        </div>
+
+        <h3>Key Datums You Need to Know</h3>
+        <ul class="styled-list">
+            <li><strong>WGS84 (World Geodetic System 1984):</strong> The global standard. Used by GPS. Its center is Earth's center of mass. Good for the planet, not the best for any single location.</li>
+            <li><strong>Arc 1960 / Clarke 1880:</strong> A common East African datum. Its ellipsoid is oriented to fit the African continent best. Used in older Tanzania maps.</li>
+            <li><strong>Airy 1830:</strong> Used in some international mapping</li>
+        </ul>
+
+        <div class="key-concept">
+            <strong>⚠️ Practical Tip:</strong> Always check what datum a map uses. If you're combining data from multiple sources, they MUST be in the same datum.
+        </div>
+
+        <!-- SECTION 2 -->
+        <h2><span class="section-number">2</span>Coordinate Reference Systems (CRS): The Language of Location</h2>
+
+        <p>A CRS tells the computer: "These numbers (e.g., -6.8, 39.2) represent a location on Earth, and here's how to interpret them."</p>
+
+        <h3>Type 1: Geographic Coordinate Systems (GCS)</h3>
+        <p><strong>What:</strong> Uses latitude and longitude (spherical coordinates) on a 3D ellipsoid.</p>
+        <ul class="styled-list">
+            <li><strong>Units:</strong> Degrees (°), minutes ('), seconds (")</li>
+            <li><strong>Accuracy:</strong> Spherical—not flat</li>
+            <li><strong>Example:</strong> -6.8023°, 39.2788° (Dar es Salaam)</li>
+        </ul>
+
+        <div class="example-box">
+            <strong>🗺️ Visual Analogy - GCS:</strong>
+            <p>Think of lines of latitude and longitude like a 3D grid wrapped around the Earth. Each intersection is a location. Perfect for "where is it?" but not for "how far is it?"</p>
+        </div>
+
+        <h3>Type 2: Projected Coordinate Systems (PCS)</h3>
+        <p><strong>What:</strong> Flattens the 3D GCS onto a 2D plane using mathematics.</p>
+        <ul class="styled-list">
+            <li><strong>Units:</strong> Meters, feet, etc. (not degrees)</li>
+            <li><strong>Accuracy:</strong> Planar—works well for measuring and area calculation</li>
+            <li><strong>Trade-off:</strong> Every projection distorts the world in some way</li>
+        </ul>
+
+        <div class="example-box">
+            <strong>🍊 Visual Analogy - PCS:</strong>
+            <p>Imagine peeling an orange and trying to flatten the peel onto a table. You HAVE to stretch, shrink, or tear some parts. Map projections do the same with the Earth.</p>
+        </div>
+
+        <h3>Which One Should You Use?</h3>
+        <ul class="styled-list">
+            <li><strong>GCS (Lat/Lon):</strong> For storing data, working across the planet, or with GPS</li>
+            <li><strong>PCS (UTM, Mercator, etc.):</strong> For mapping, measuring distances, calculating areas</li>
+        </ul>
+
+        <h3>Universal Transverse Mercator (UTM) for Tanzania</h3>
+        <p>UTM is a worldwide standard that divides Earth into 60 vertical strips (zones). Tanzania spans two zones:</p>
+
+        <div class="key-concept">
+            <ul class="styled-list">
+                <li><strong>UTM Zone 36S:</strong> Western Tanzania</li>
+                <li><strong>UTM Zone 37S:</strong> Eastern Tanzania (including Dar es Salaam, Zanzibar, Dodoma)</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <strong>📍 Same Location in Different CRS:</strong>
+            <p><strong>Dodoma University (Tanzania):</strong></p>
+            <ul style="margin: 10px 0;">
+                <li><strong>GCS (WGS84):</strong> -6.1667°, 35.7500°</li>
+                <li><strong>PCS (UTM 37S):</strong> 632,450 m E, 9,317,600 m N</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 3 -->
+        <h2><span class="section-number">3</span>Data Models: How We Store the World</h2>
+
+        <p>A data model is the "digital skin" of the map. How do we represent buildings, rivers, forests, and mountains in a computer?</p>
+
+        <h3>Vector Data Model: Discrete Objects</h3>
+        <p><strong>Best for:</strong> Well-defined, discrete objects with clear boundaries.</p>
+
+        <ul class="styled-list">
+            <li><strong>Points (0D):</strong> No area or length. Examples: trees, wells, cities (at small scale), schools</li>
+            <li><strong>Lines (1D):</strong> Have length but no area. Examples: rivers, roads, pipelines, power lines</li>
+            <li><strong>Polygons (2D):</strong> Have area. Examples: lakes, forest patches, country borders, farmland, buildings</li>
+        </ul>
+
+        <div class="example-box">
+            <strong>🏘️ Example: Village Representation</strong>
+            <p><strong>Representing a village in vector format:</strong></p>
+            <ul style="margin: 10px 0;">
+                <li><strong>Points:</strong> Houses, shops, wells, flagpoles</li>
+                <li><strong>Lines:</strong> Roads, footpaths, irrigation channels</li>
+                <li><strong>Polygons:</strong> Forest patches, cultivated fields, community center (as an area)</li>
+            </ul>
+        </div>
+
+        <h3>Raster Data Model: Continuous Surfaces</h3>
+        <p><strong>Best for:</strong> Continuous phenomena and satellite imagery.</p>
+
+        <p>A raster is a grid of equally-sized cells (pixels). Each cell holds a single value:</p>
+
+        <ul class="styled-list">
+            <li><strong>Satellite Imagery:</strong> Each pixel = brightness/color value (0-255 for each band)</li>
+            <li><strong>Elevation/DEM:</strong> Each pixel = height in meters</li>
+            <li><strong>Temperature Maps:</strong> Each pixel = temperature in degrees</li>
+            <li><strong>Rainfall Maps:</strong> Each pixel = total rainfall in mm</li>
+        </ul>
+
+        <div class="example-box">
+            <strong>🛰️ Example: From Vector to Raster</strong>
+            <p>A forest represented as vector (polygon boundary) shows the exact edge. The same forest as raster shows which pixels contain forest trees. Raster is better for analysis (e.g., "What's the total forest area in this region?") because you just count pixels.</p>
+        </div>
+
+        <!-- SECTION 4 -->
+        <h2><span class="section-number">4</span>Attribute Data: Giving Life to Shapes</h2>
+
+        <p>A shape on a map is just geometry until you attach information to it. <strong>This is what makes GIS powerful.</strong></p>
+
+        <h3>The Concept: Spatial + Attribute = Information</h3>
+
+        <div class="key-concept">
+            <p><strong>Spatial Data:</strong> Where is it? (coordinates, geometry)</p>
+            <p><strong>Attribute Data:</strong> What is it? (properties, characteristics)</p>
+            <p><strong>The Link:</strong> A unique ID connects each shape to a row in a table.</p>
+        </div>
+
+        <div class="example-box">
+            <strong>💧 Example: A Well Registry</strong>
+            <p><strong>Spatial Part (Map):</strong> A point at coordinates (632,422 m E, 9,318,000 m N)</p>
+            <p><strong>Attribute Part (Table):</strong></p>
+            <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td style="border: 1px solid #ccc; padding: 8px;"><strong>Well_ID</strong></td>
+                    <td style="border: 1px solid #ccc; padding: 8px;"><strong>Type</strong></td>
+                    <td style="border: 1px solid #ccc; padding: 8px;"><strong>Depth_m</strong></td>
+                    <td style="border: 1px solid #ccc; padding: 8px;"><strong>Water_Quality</strong></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 8px;">W001</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">Dug Well</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">42</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">Good</td>
+                </tr>
+            </table>
+            <p><strong>The Magic Query:</strong> "Show me all wells with Good water quality that are deeper than 40 meters in the northern ward."</p>
+        </div>
+
+        <h3>Why This Matters</h3>
+        <ul class="styled-list">
+            <li>Shape alone tells you " WHERE " something is</li>
+            <li>Attributes tell you " WHAT " it is and its properties</li>
+            <li>Together, they let you answer complex questions about the world</li>
+        </ul>
+
+        <!-- SECTION 5 -->
+        <h2><span class="section-number">5</span>Scale & Generalization: Managing the Detail</h2>
+
+        <p><strong>Map scale</strong> is the ratio between distance on the map and distance on the ground. It dictates how much detail you can show.</p>
+
+        <h3>Understanding Scale</h3>
+        <ul class="styled-list">
+            <li><strong>Large Scale (1:1,000):</strong> Shows a small area with great detail. You can see individual buildings. Think: City center map</li>
+            <li><strong>Medium Scale (1:50,000):</strong> Shows a larger area with moderate detail. Think: District map</li>
+            <li><strong>Small Scale (1:1,000,000):</strong> Shows a huge area with minimal detail. You can see countries. Think: Continental map</li>
+        </ul>
+
+        <div class="example-box">
+            <strong>📊 Visual Example: Dodoma Region at Different Scales</strong>
+            <ul style="margin: 10px 0;">
+                <li><strong>1:5,000:</strong> You can see streets, individual buildings, small water sources</li>
+                <li><strong>1:100,000:</strong> You see major roads, towns, large district features</li>
+                <li><strong>1:1,000,000:</strong> You see Tanzania as a whole, just the name "Dodoma"</li>
+            </ul>
+        </div>
+
+        <h3>Generalization: The Art of Simplification</h3>
+        <p>You cannot show every house in Tanzania on a map of Africa. <strong>Generalization</strong> is the process of simplifying data for display at smaller scales.</p>
+
+        <ul class="styled-list">
+            <li><strong>Selection:</strong> Choose only the most important features. (Show major highways, hide dirt roads)</li>
+            <li><strong>Simplification:</strong> Reduce detail in lines. (Smooth a coastline, remove small wiggles)</li>
+            <li><strong>Aggregation:</strong> Merge small features into larger ones. (Individual houses → "Residential Zone")</li>
+            <li><strong>Displacement:</strong> Move features slightly to avoid overlap at small scale</li>
+        </ul>
+
+        <div class="key-concept">
+            <strong>Key Insight:</strong> Different scales serve different purposes. A farmer needs a 1:5,000 map to plan irrigation channels. A transportation minister needs a 1:500,000 map to plan highways. Both are correct—they just answer different questions.
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-box">
+            <h3>📖 Summary for Revision</h3>
+            <ul class="styled-list">
+                <li><strong>Geodesy:</strong> We use a datum (like WGS84 or Arc 1960) to anchor an ellipsoid to Earth for accurate measurement</li>
+                <li><strong>CRS:</strong> We store in GCS (lat/lon), display/measure in PCS (UTM) for correct distances in meters</li>
+                <li><strong>Data Models:</strong> Vector (points/lines/polygons) for discrete objects; Raster (grid) for continuous surfaces</li>
+                <li><strong>Attributes:</strong> Spatial geometry + attribute table = complete geographic information</li>
+                <li><strong>Scale:</strong> Map scale controls detail level. Generalization simplifies data for smaller scales</li>
+            </ul>
+        </div>
+
+        <div class="key-concept">
+            <strong>💡 Study Exercise:</strong>
+            <p>Think of a place you know well (your university, a local market, a neighborhood). Sketch how you would represent it in GIS:</p>
+            <ul style="margin: 10px 0;">
+                <li>What would you show as points, lines, and polygons?</li>
+                <li>What attributes would you record for each feature?</li>
+                <li>Would you use vector or raster, or both?</li>
+                <li>What scale would you use?</li>
+            </ul>
+        </div>
+
+        <div class="quiz-button-container">
+            <p style="margin-bottom: 20px; color: #7f8c8d;">
+                Ready to check your understanding? Take the quiz below to proceed to Module 2.
+            </p>
+            <button class="quiz-button" onclick="window.location.href='{{ url_for('module_one_quiz') }}'">
+                📝 Start Module 1 Quiz
+            </button>
+            <p style="margin-top: 15px; color: #e74c3c; font-size: 0.95em;">
+                <strong>You need at least 70% to pass and unlock Module 2</strong>
+            </p>
+        </div>
+
+        <div class="page-number">~ Page 1 ~</div>
+    </div>
 </div>
+
 {% endblock %}
