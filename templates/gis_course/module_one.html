@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Module 1: GIS Fundamentals{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6">Module 1: GIS Fundamentals – The Science of Representation</h1>
+    <p class="mb-4"><strong>Core Question:</strong> How do we accurately capture the infinite complexity of the real world and store it inside a finite computer?</p>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">1. Geodesy: The Foundation of Location</h2>
+    <p>Before we can map anything, we need a mathematical understanding of the Earth's shape.</p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>The Problem:</strong> The Earth is not a perfect sphere. It's an irregular shape called a geoid (a bumpy, lumpy ball defined by mean sea level). This is too complex for calculations.</li>
+        <li><strong>The Solution: The Ellipsoid (or Spheroid)</strong> – A smooth, mathematical surface that approximates the geoid. Defined by flattening the poles (squashing a sphere). Think of it as the "smooth skin" we wrap around the bumpy Earth for calculations.</li>
+        <li><strong>The Next Problem:</strong> A perfect ellipsoid doesn't fit every part of the Earth equally well. An ellipsoid that fits North America perfectly will be "off" in Tanzania.</li>
+        <li><strong>The Solution: The Datum</strong> – A datum is a specific version of an ellipsoid that is fixed to the Earth at a particular point to provide the best possible fit for a specific region. It acts as the starting point (the "0,0,0") for all coordinates.</li>
+    </ul>
+    <p class="mb-2"><strong>Key Datums:</strong></p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>WGS84 (World Geodetic System 1984):</strong> The global standard. It's the datum used by GPS. Its center is the Earth's center of mass, making it good for the whole planet, but not the absolute best for any single location.</li>
+        <li><strong>Local Tanzanian Datums:</strong> Before GPS, Tanzania (and much of East Africa) was mapped using local datums for better local accuracy.</li>
+        <li><strong>Arc 1960 / UTM:</strong> A common local datum for East Africa. Its ellipsoid (Clarke 1880) is oriented to fit the African continent best. Coordinates for the same physical point on the ground will be different in WGS84 vs. Arc 1960.</li>
+        <li><strong>Datum Shift:</strong> When using old paper maps with modern GPS devices, you must know the datum of the map and apply a datum transformation (shift) to align the data correctly.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">2. Coordinate Reference Systems (CRS): The Language of Location</h2>
+    <p>A CRS tells the computer how to interpret a set of numbers (e.g., -6.172, 39.201) as a specific place on Earth. There are two main types:</p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>Geographic Coordinate Systems (GCS):</strong> Spherical (3D), units in degrees, uses latitude and longitude on a 3D ellipsoid. Analogy: Like giving an address as "the corner of 5th and Main". Weakness: You cannot accurately measure distances or areas on a flat map using unprojected lat/long coordinates.</li>
+        <li><strong>Projected Coordinate Systems (PCS):</strong> Planar/Flat (2D), units in meters/feet, uses a mathematical model (map projection) to flatten the 3D GCS onto a 2D plane. Analogy: Like peeling an orange and trying to flatten the peel. Key system for Tanzania: Universal Transverse Mercator (UTM).</li>
+    </ul>
+    <p class="mb-2"><strong>UTM Zones for Tanzania:</strong></p>
+    <ul class="list-disc ml-6 mb-2">
+        <li>UTM Zone 36S: Covers western Tanzania.</li>
+        <li>UTM Zone 37S: Covers eastern Tanzania (including Dar es Salaam and Zanzibar).</li>
+    </ul>
+    <p>Why use UTM? It allows you to calculate accurate distances (in meters) and areas, which is essential for practical work like measuring farm plots or road lengths.</p>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">3. Data Models: How We Store the World</h2>
+    <p>This is the "digital skin" of the map. How do we represent a river or a mountain in a database?</p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>Vector Data Model:</strong> Best for discrete, well-defined objects. Components: Points (0D), Lines (1D), Polygons (2D).</li>
+        <li><strong>Raster Data Model:</strong> Best for continuous, flowing phenomena. Components: A grid of equally sized cells (pixels). Each cell has a single value.</li>
+    </ul>
+    <p class="mb-2"><strong>Examples:</strong></p>
+    <ul class="list-disc ml-6 mb-2">
+        <li>Point: A tree, a well, a city on a small-scale map.</li>
+        <li>Line: A river, a road, a pipeline.</li>
+        <li>Polygon: A lake, a country border, a land-use zone.</li>
+        <li>Satellite Imagery: Each pixel value is the brightness/color.</li>
+        <li>Elevation (DEM): Each pixel value is the height of the ground.</li>
+        <li>Temperature Maps: Each pixel value is the degrees.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">4. Attribute Data: Giving Life to Shapes</h2>
+    <p>A shape on a map is just a shape until you attach information to it. This is the power of a Geographic Information System.</p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>The Concept:</strong> GIS links two types of data: Spatial Data (the .shp file) and Attribute Data (the .dbf file).</li>
+        <li><strong>The Link:</strong> A unique ID in the spatial file connects each feature to a specific row in the attribute table.</li>
+    </ul>
+    <p class="mb-2"><strong>Example (A Village Well):</strong></p>
+    <ul class="list-disc ml-6 mb-2">
+        <li>Spatial Data: A point located at coordinates (X, Y).</li>
+        <li>Attribute Data (Table Row): ID, Type, Depth (m), Water Quality, Date Inspected.</li>
+    </ul>
+    <p>This allows you to ask questions like, "Show me all wells with 'Good' water quality that are deeper than 40 meters."</p>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">5. Scale & Generalization: Managing the Detail</h2>
+    <p>Map scale is the ratio between distance on the map and distance on the ground. It dictates how much detail you can (and should) show.</p>
+    <ul class="list-disc ml-6 mb-2">
+        <li><strong>Large Scale (e.g., 1:1,000):</strong> Shows a small area with great detail. (Think: a map of a single village).</li>
+        <li><strong>Small Scale (e.g., 1:1,000,000):</strong> Shows a large area with less detail. (Think: a map of all of Tanzania).</li>
+        <li><strong>Generalization:</strong> The process of simplifying data for display at smaller scales. You cannot show every house in Tanzania on a map of Africa.</li>
+    </ul>
+    <p class="mb-2"><strong>Techniques of Generalization:</strong></p>
+    <ul class="list-disc ml-6 mb-2">
+        <li>Selection: Choosing only the most important features (e.g., only major highways, not dirt roads).</li>
+        <li>Simplification: Reducing the number of points in a line to make it less "wiggly" (e.g., smoothing a coastline).</li>
+        <li>Aggregation: Merging individual houses into a single polygon to represent a city neighborhood.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-2">Summary for Revision</h2>
+    <ul class="list-disc ml-6 mb-2">
+        <li>Geodesy: We use a datum (like WGS84 or Arc 1960) to anchor an ellipsoid to the Earth for accurate measurement.</li>
+        <li>CRS: We store locations in a Geographic system (lat/lon), but we display and measure them in a Projected system (like UTM Zone 37S) to get correct distances in meters.</li>
+        <li>Data Models: We use Vector (points/lines/polygons) for discrete objects and Raster (grid of pixels) for continuous surfaces.</li>
+        <li>Attribute Data: This is the "information" that is linked to the "location" via a table, enabling real-world analysis.</li>
+        <li>Scale: The level of detail on a map is controlled by its scale. Generalization is the art of simplifying information as you move from large-scale (detailed) to small-scale (overview) maps.</li>
+    </ul>
+    <p class="mb-4"><strong>Study Tip:</strong> Think of a familiar place (e.g., your university campus or a local market). How would you represent it using vector data? What would be points, lines, and polygons? What attributes would you store for each? This mental exercise solidifies the concepts.</p>
+</div>
+{% endblock %}

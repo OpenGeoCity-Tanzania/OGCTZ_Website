@@ -1,5 +1,7 @@
+## ...existing code...
 from flask import Flask, render_template, request, flash, redirect, url_for, Response
 import os
+from authlib.integrations.flask_client import OAuth
 
 # Absolute path of current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -9,6 +11,40 @@ app = Flask(
     template_folder=os.path.join(current_dir, "templates"),
     static_folder=os.path.join(current_dir, "static"),
     static_url_path="/static"
+)
+
+# OAuth setup
+oauth = OAuth(app)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID')
+app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET')
+app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID', 'your-github-client-id')
+app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET', 'your-github-client-secret')
+
+google = oauth.register(
+    name='google',
+    client_id=app.config['GOOGLE_CLIENT_ID'],
+    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    client_kwargs={'scope': 'openid email profile'},
+)
+
+github = oauth.register(
+    name='github',
+    client_id=app.config['GITHUB_CLIENT_ID'],
+    client_secret=app.config['GITHUB_CLIENT_SECRET'],
+    access_token_url='https://github.com/login/oauth/access_token',
+    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
+    authorize_params=None,
+    api_base_url='https://api.github.com/',
+    userinfo_endpoint='https://api.github.com/user',
+    client_kwargs={'scope': 'user:email'},
 )
 
 # Secret key (use env variable on Vercel)
@@ -59,6 +95,43 @@ def contact():
 def resources():
     return render_template("resources.html", page_title="Resources")
 
+def gis_course():
+    return render_template("gis_course/gis_course.html", page_title="GIS Fundamentals Guide")
+
+# GIS Course Registration
+
+# GIS Course Landing with OAuth
+@app.route("/gis-course", methods=["GET"])
+def gis_course():
+    return render_template("gis_course/gis_course.html", page_title="GIS Fundamentals Guide")
+
+@app.route('/login/google')
+def login_google():
+    redirect_uri = url_for('authorize_google', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@app.route('/login/github')
+def login_github():
+    redirect_uri = url_for('authorize_github', _external=True)
+    return oauth.github.authorize_redirect(redirect_uri)
+
+@app.route('/authorize/google')
+def authorize_google():
+    token = oauth.google.authorize_access_token()
+    user = oauth.google.parse_id_token(token)
+    # user contains: sub, name, email, picture, etc.
+    # Here you would store user info and send email if needed
+    return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+
+@app.route('/authorize/github')
+def authorize_github():
+    token = oauth.github.authorize_access_token()
+    resp = oauth.github.get('user', token=token)
+    user = resp.json()
+    # user contains: login, id, name, email, etc.
+    # Here you would store user info and send email if needed
+    return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+
 
 # Sitemap and robots
 @app.route('/sitemap.xml', methods=['GET'])
@@ -71,7 +144,8 @@ def sitemap():
         '/projects',
         '/team',
         '/contact',
-        '/resources'
+        '/resources',
+        '/gis-course'
     ]
     site_url = os.environ.get("SITE_URL", "https://ogctz.org")
     return render_template('sitemap.xml', paths=paths, site_url=site_url), 200, {'Content-Type': 'application/xml'}
