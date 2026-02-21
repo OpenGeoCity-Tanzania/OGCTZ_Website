@@ -71,7 +71,7 @@ def inject_global_vars():
         "location": "Dodoma, Tanzania",
         "founded": "2021",
         # SEO defaults — can be overridden per-page by providing `page_description` or `page_keywords`
-        "site_url": os.environ.get("SITE_URL", "https://ogctz.org"),
+        "site_url": os.environ.get("SITE_URL", "https://opengeocity.org"),
         "default_description": "OpenGeoCity Tanzania — geospatial innovation, urban data and mapping for resilient cities.",
         "default_keywords": "OpenGeoCity, geospatial, GIS, mapping, Tanzania, urban planning, data",
         "twitter_handle": os.environ.get("TWITTER_HANDLE", "@OpenGeoCityTZ")
@@ -137,23 +137,33 @@ def authorize_google():
     if not google:
         flash("Google OAuth is not configured.", "error")
         return redirect(url_for("home"))
-    token = oauth.google.authorize_access_token()
-    user = oauth.google.parse_id_token(token)
-    # user contains: sub, name, email, picture, etc.
-    # Here you would store user info and send email if needed
-    return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+    try:
+        token = oauth.google.authorize_access_token()
+        user = oauth.google.parse_id_token(token)
+        # user contains: sub, name, email, picture, etc.
+        # Here you would store user info and send email if needed
+        return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+    except Exception as e:
+        print(f"Google OAuth error: {str(e)}")
+        flash(f"Authentication failed: {str(e)}", "error")
+        return redirect(url_for("gis_course"))
 
 @app.route('/authorize/github')
 def authorize_github():
     if not github:
         flash("GitHub OAuth is not configured.", "error")
         return redirect(url_for("home"))
-    token = oauth.github.authorize_access_token()
-    resp = oauth.github.get('user', token=token)
-    user = resp.json()
-    # user contains: login, id, name, email, etc.
-    # Here you would store user info and send email if needed
-    return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+    try:
+        token = oauth.github.authorize_access_token()
+        resp = oauth.github.get('user', token=token)
+        user = resp.json()
+        # user contains: login, id, name, email, etc.
+        # Here you would store user info and send email if needed
+        return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+    except Exception as e:
+        print(f"GitHub OAuth error: {str(e)}")
+        flash(f"Authentication failed: {str(e)}", "error")
+        return redirect(url_for("gis_course"))
 
 
 # Sitemap and robots
