@@ -144,11 +144,16 @@ def authorize_google():
     try:
         token = oauth.google.authorize_access_token()
         user = oauth.google.parse_id_token(token)
+        print(f"Google OAuth successful for user: {user.get('email')}")
         # user contains: sub, name, email, picture, etc.
         # Here you would store user info and send email if needed
-        return render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+        success_page = render_template("gis_course/register_success.html", page_title="Registration Successful", user=user)
+        print(f"Rendered register_success.html successfully")
+        return success_page
     except Exception as e:
         print(f"Google OAuth error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         flash(f"Authentication failed: {str(e)}", "error")
         return redirect(url_for("gis_course"))
 
