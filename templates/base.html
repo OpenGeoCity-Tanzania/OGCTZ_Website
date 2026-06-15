@@ -51,6 +51,10 @@
     <link rel="manifest" href="{{ url_for('static', filename='img/favicons/fav_org/site.webmanifest') }}">
     <meta name="theme-color" content="#0ea5e9">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -58,22 +62,48 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
                     colors: {
                         brand: {
-                            dark: '#0f172a',   /* Slate 900 */
-                            primary: '#0ea5e9', /* Sky 500 */
-                            accent: '#10b981',  /* Emerald 500 */
-                            light: '#f8fafc',   /* Slate 50 */
+                            dark: '#0f172a',
+                            primary: '#0ea5e9',
+                            accent: '#10b981',
+                            light: '#f8fafc',
+                            earth: '#4a7c23',
+                            warm: '#f59e0b',
                         }
                     },
                     animation: {
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'blob': 'blob 8s ease-in-out infinite',
+                        'aurora': 'aurora 12s ease-in-out infinite',
+                        'stagger-in': 'staggerIn 0.6s ease-out forwards',
+                        'shimmer-slide': 'shimmerSlide 2.5s linear infinite',
                     },
                     keyframes: {
                         fadeInUp: {
                             '0%': { opacity: '0', transform: 'translateY(20px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
+                        },
+                        blob: {
+                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(20px, -30px) scale(1.1)' },
+                            '66%': { transform: 'translate(-15px, 15px) scale(0.95)' },
+                        },
+                        aurora: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                        staggerIn: {
+                            '0%': { opacity: '0', transform: 'translateY(24px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shimmerSlide: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        },
                     }
                 }
             }

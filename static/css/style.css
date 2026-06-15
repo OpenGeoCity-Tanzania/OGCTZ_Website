@@ -509,3 +509,84 @@ html.dark button {
 * {
     @apply transition-colors duration-300;
 }
+
+/* ===== UX PRO MAX: STAGGER REVEAL ===== */
+[data-scroll-animate] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    transition-delay: var(--stagger-delay, 0ms);
+}
+
+[data-scroll-animate].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== UX PRO MAX: HOVER LIFT ===== */
+.hover-lift {
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease-out;
+    will-change: transform;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(14, 165, 233, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== UX PRO MAX: WCAG FOCUS RINGS ===== */
+/* Per UX Pro Max: focus states visible for keyboard nav, 3-4px rings */
+:focus-visible {
+    outline: 3px solid #0ea5e9;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid #0ea5e9;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+html.dark :focus-visible {
+    outline-color: #38bdf8;
+}
+
+/* ===== UX PRO MAX: AURORA HERO GLOW ===== */
+@keyframes aurora-pulse {
+    0%, 100% { opacity: 0.04; transform: scale(1); }
+    50% { opacity: 0.08; transform: scale(1.05); }
+}
+
+.aurora-glow {
+    animation: aurora-pulse 6s ease-in-out infinite;
+}
+
+/* ===== UX PRO MAX: PREFERS-REDUCED-MOTION (full guard) ===== */
+@media (prefers-reduced-motion: reduce) {
+    [data-scroll-animate] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .hover-lift,
+    .hover-lift:hover {
+        transform: none;
+        transition: none;
+    }
+
+    .aurora-glow,
+    .animate-blob,
+    .animate-aurora,
+    .animate-bounce,
+    .animate-shimmer-slide {
+        animation: none !important;
+    }
+
+    .typewriter-cursor {
+        animation: none !important;
+        opacity: 1;
+    }
+}

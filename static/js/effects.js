@@ -44,15 +44,25 @@ class InteractiveEffects {
 
   // 2. Scroll-triggered Animations (Intersection Observer)
   setupScrollAnimations() {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // If reduced motion, immediately reveal everything and bail
+    if (reducedMotion) {
+      document.querySelectorAll('[data-scroll-animate]').forEach(el => {
+        el.classList.add('is-visible', 'animate-in');
+      });
+      return;
+    }
+
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
+      rootMargin: '0px 0px -60px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('animate-in');
+          entry.target.classList.add('is-visible', 'animate-in');
           observer.unobserve(entry.target);
         }
       });
@@ -61,19 +71,6 @@ class InteractiveEffects {
     // Observe all elements with scroll-animation class
     document.querySelectorAll('[data-scroll-animate]').forEach(el => {
       observer.observe(el);
-    });
-
-    // Also animate common elements
-    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
-      if (!el.closest('[data-no-animate]')) {
-        observer.observe(el);
-      }
-    });
-
-    document.querySelectorAll('p, ul, ol').forEach(el => {
-      if (!el.closest('[data-no-animate]')) {
-        observer.observe(el);
-      }
     });
   }
 
@@ -114,20 +111,25 @@ class InteractiveEffects {
 
   // 4. Card Hover Effects
   setupCardHoverEffects() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const cards = document.querySelectorAll('[data-card], .card, article');
     
     cards.forEach(card => {
+      // Skip cards that already use the CSS hover-lift class
+      if (card.classList.contains('hover-lift')) return;
+
       card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-5px) scale(1.01)';
-        this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15)';
+        this.style.transform = 'translateY(-4px)';
+        this.style.boxShadow = '0 16px 36px rgba(0,0,0,0.12)';
       });
 
       card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-        this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '';
       });
 
-      card.style.transition = 'all 0.3s cubic-bezier(0.23, 1, 0.320, 1)';
+      card.style.transition = 'transform 0.22s ease-out, box-shadow 0.22s ease-out';
     });
   }
 
