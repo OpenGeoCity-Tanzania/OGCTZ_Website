@@ -510,29 +510,6 @@ html.dark button {
     @apply transition-colors duration-300;
 }
 
-/* ===== LOGO SVG THEME ADAPTATION ===== */
-/* Header logo: magnifier fill white in light, dark slate in dark */
-nav svg circle.dark-fill { fill: #ffffff; }
-html.dark nav svg circle.dark-fill { fill: #1e293b; }
-
-/* Header logo: network lines and handle adapt to theme */
-nav svg line { stroke: #94a3b8; }
-html.dark nav svg line { stroke: #475569; }
-
-/* Header logo: magnifier ring stroke */
-nav svg circle[fill="none"] { stroke: #1e293b; }
-html.dark nav svg circle[fill="none"] { stroke: #94a3b8; }
-
-/* Header logo: magnifier handle */
-nav svg line[stroke-width="2.5"] { stroke: #1e293b; }
-html.dark nav svg line[stroke-width="2.5"] { stroke: #94a3b8; }
-
-/* Header logo: network nodes */
-nav svg circle[fill="#64748b"] { fill: #475569; }
-html.dark nav svg circle[fill="#64748b"] { fill: #38bdf8; }
-nav svg circle[fill="#475569"] { fill: #334155; }
-html.dark nav svg circle[fill="#475569"] { fill: #7dd3fc; }
-
 /* ===== UX PRO MAX: STAGGER REVEAL ===== */
 [data-scroll-animate] {
     opacity: 0;
