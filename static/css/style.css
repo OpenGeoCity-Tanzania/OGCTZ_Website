@@ -166,29 +166,6 @@ body {
     }
 }
 
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    /* ===== ICON STYLING: enforce single-color icons ===== */
-    :root {
-        --icon-color: #000000; /* black for light theme */
-    }
-
-    html.dark {
-        --icon-color: #ffffff; /* white for dark mode */
-    }
-
-    svg.icon {
-        color: var(--icon-color) !important;
-        fill: currentColor !important;
-        stroke: currentColor !important;
-        vector-effect: non-scaling-stroke;
-    }
 @keyframes zoomIn {
     from {
         opacity: 0;
@@ -467,6 +444,24 @@ html.dark .skeleton {
     background: linear-gradient(90deg, #404040 25%, #505050 50%, #404040 75%);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
+}
+
+/* ===== TYPEWRITER CURSOR ===== */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.typewriter-cursor {
+    display: inline-block;
+    animation: blink 0.8s step-end infinite;
+    font-weight: 300;
+    margin-left: 2px;
+}
+
+/* ===== COUNTER STAGGER ANIMATION ===== */
+.counter {
+    transition: color 0.3s ease;
 }
 
 /* ===== RESPONSIVE ANIMATIONS ===== */

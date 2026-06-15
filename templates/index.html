@@ -1,50 +1,292 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="relative bg-brand-dark/85 overflow-hidden min-h-[600px] flex items-center">
+
+<!-- ===== HERO SECTION ===== -->
+<section class="relative bg-brand-dark/90 overflow-hidden min-h-[680px] flex flex-col items-center justify-center">
     <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
     <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-brand-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
     <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-brand-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
-        <span class="inline-block py-1 px-3 rounded-full bg-brand-primary/10 text-brand-primary text-sm font-semibold mb-6 border border-brand-primary/20">
+        <span class="inline-block py-1 px-4 rounded-full bg-brand-primary/10 text-brand-primary text-sm font-semibold mb-6 border border-brand-primary/20 tracking-wide">
             Smart Solutions, Bright Futures
         </span>
-        <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">
-            Pioneering <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent">Geospatial Innovation</span> <br> in Tanzania
+        <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 leading-tight">
+            Transforming Tanzania with<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent" id="typewriter-text"></span><span class="typewriter-cursor text-brand-primary">|</span>
         </h1>
-        <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-300 mb-10">
-            We bridge the gap between traditional urban planning and modern data science to build resilient, smart cities.
+        <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-300 mb-10 leading-relaxed">
+            We bridge the gap between traditional urban planning and modern data science — building resilient, smart cities across Tanzania through geospatial intelligence.
         </p>
-        <div class="flex justify-center gap-4">
+        <div class="flex flex-wrap justify-center gap-4">
             <a href="{{ url_for('projects') }}" class="px-8 py-4 bg-brand-primary text-white rounded-lg font-bold hover:bg-sky-600 transition shadow-[0_0_20px_rgba(14,165,233,0.3)]">
-                View Projects
+                Explore Our Work
             </a>
-            <a href="#" class="px-8 py-4 bg-transparent border border-slate-600 text-white rounded-lg font-bold hover:bg-white/5 transition">
+            <a href="{{ url_for('about') }}" class="px-8 py-4 bg-transparent border border-slate-500 text-white rounded-lg font-bold hover:bg-white/5 transition">
                 Our Mission
+            </a>
+        </div>
+    </div>
+
+    <!-- Scroll down indicator -->
+    <a href="#about-section" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-400 hover:text-brand-primary transition animate-bounce">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </a>
+</section>
+
+<!-- ===== ANIMATED IMPACT COUNTERS ===== -->
+<section class="py-14 bg-white/90 dark:bg-slate-900/85 border-b border-slate-100 dark:border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
+        <div data-scroll-animate>
+            <div class="text-3xl font-bold text-brand-primary counter" data-target="30" data-suffix="+">0</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Districts Mapped</div>
+        </div>
+        <div data-scroll-animate>
+            <div class="text-3xl font-bold text-brand-primary counter" data-target="15000" data-suffix="+">0</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Data Points</div>
+        </div>
+        <div data-scroll-animate>
+            <div class="text-3xl font-bold text-brand-primary counter" data-target="50" data-suffix="+">0</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Publications</div>
+        </div>
+        <div data-scroll-animate>
+            <div class="text-3xl font-bold text-brand-primary counter" data-target="100" data-suffix="+">0</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Trained Professionals</div>
+        </div>
+        <div data-scroll-animate>
+            <div class="text-3xl font-bold text-brand-primary counter" data-target="15" data-suffix="+">0</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Global Partners</div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== ABOUT / WHO WE ARE ===== -->
+<section id="about-section" class="py-20 bg-slate-50/95 dark:bg-slate-900/90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14" data-scroll-animate>
+            <span class="text-brand-primary text-sm font-bold uppercase tracking-widest">Who We Are</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark dark:text-white mt-2">
+                A Geospatial Intelligence Lab<br>for Tanzania's Future
+            </h2>
+            <p class="mt-4 text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
+                At OpenGeoCity Tanzania, we firmly believe that maps are the intelligence that shapes a better world — not merely a collection of lines and colors.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-slate-700 hover-lift" data-card data-scroll-animate>
+                <div class="w-12 h-12 bg-brand-primary/10 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="icon h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Geospatial Intelligence</h3>
+                <p class="text-slate-500 dark:text-slate-300 leading-relaxed">
+                    Rooted in the art and science of mapping, we create accurate, actionable spatial data that empowers diverse stakeholders — from governments to local communities — to make well-informed decisions.
+                </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-slate-700 hover-lift" data-card data-scroll-animate>
+                <div class="w-12 h-12 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="icon h-6 w-6 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Smart Urban Planning</h3>
+                <p class="text-slate-500 dark:text-slate-300 leading-relaxed">
+                    We leverage cutting-edge geospatial tools to visualize, analyze, and solve complex spatial issues — driving urbanization, environmental management, and sustainable development across Tanzania.
+                </p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-slate-700 hover-lift" data-card data-scroll-animate>
+                <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-5">
+                    <svg class="icon h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Capacity Building</h3>
+                <p class="text-slate-500 dark:text-slate-300 leading-relaxed">
+                    Beyond mapping, we are a laboratory of ideas — offering training programs that equip urban practitioners and graduates with essential geospatial skills, empowering them to contribute to sustainable development.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-10" data-scroll-animate>
+            <a href="{{ url_for('about') }}" class="inline-flex items-center gap-2 text-brand-primary font-semibold hover:underline text-lg">
+                Explore Our Story
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
             </a>
         </div>
     </div>
 </section>
 
-<section class="py-12 bg-white/90 dark:bg-slate-900/85 border-b border-slate-100 dark:border-slate-700">
-    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        <div>
-            <div class="text-3xl font-bold text-brand-dark dark:text-brand-light">30+</div>
-            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Districts Mapped</div>
+<!-- ===== KEY IMPACT AREAS ===== -->
+<section class="py-20 bg-brand-dark relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14" data-scroll-animate>
+            <span class="text-brand-primary text-sm font-bold uppercase tracking-widest">What We Do</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">Key Impact Areas</h2>
+            <p class="mt-4 text-slate-400 max-w-xl mx-auto">
+                OpenGeoCity delivers innovative geospatial solutions to address societal challenges and drive sustainable development.
+            </p>
         </div>
-        <div>
-            <div class="text-3xl font-bold text-brand-dark dark:text-brand-light">15K+</div>
-            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Data Points</div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-brand-primary/10 hover:border-brand-primary/30 transition-all duration-300 group" data-scroll-animate>
+                <div class="w-14 h-14 bg-brand-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="h-7 w-7 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-base mb-2">Smart Cities Development</h3>
+                <p class="text-slate-400 text-sm">Building data-driven urban ecosystems for Tanzania's growing cities.</p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-brand-accent/10 hover:border-brand-accent/30 transition-all duration-300 group" data-scroll-animate>
+                <div class="w-14 h-14 bg-brand-accent/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="h-7 w-7 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-base mb-2">Urban Resilience</h3>
+                <p class="text-slate-400 text-sm">Designing communities equipped to withstand and recover from future challenges.</p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all duration-300 group" data-scroll-animate>
+                <div class="w-14 h-14 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="h-7 w-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-base mb-2">Environmental Sustainability</h3>
+                <p class="text-slate-400 text-sm">Using spatial analytics to protect Tanzania's natural resources and ecosystems.</p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-purple-500/10 hover:border-purple-500/30 transition-all duration-300 group" data-scroll-animate>
+                <div class="w-14 h-14 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="h-7 w-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-base mb-2">Education & Capacity Building</h3>
+                <p class="text-slate-400 text-sm">Training the next generation of geospatial professionals in Tanzania.</p>
+            </div>
         </div>
-        <div>
-            <div class="text-3xl font-bold text-brand-dark dark:text-brand-light">100%</div>
-            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Open Source</div>
-        </div>
-        <div>
-            <div class="text-3xl font-bold text-brand-dark dark:text-brand-light">5</div>
-            <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Global Partners</div>
+
+        <div class="text-center mt-12" data-scroll-animate>
+            <a href="{{ url_for('services') }}" class="px-8 py-4 bg-brand-primary text-white rounded-lg font-bold hover:bg-sky-600 transition shadow-[0_0_20px_rgba(14,165,233,0.3)] inline-flex items-center gap-2">
+                Explore Our Services
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
         </div>
     </div>
 </section>
+
+<!-- ===== FEATURED PROJECTS ===== -->
+<section class="py-20 bg-white/95 dark:bg-slate-900/90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14" data-scroll-animate>
+            <span class="text-brand-primary text-sm font-bold uppercase tracking-widest">Our Work</span>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark dark:text-white mt-2">Featured Projects</h2>
+            <p class="mt-4 text-slate-500 dark:text-slate-300 max-w-xl mx-auto">
+                Highlights of impactful initiatives undertaken to address Tanzania's most pressing challenges through geospatial intelligence.
+            </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-3">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-brand-primary/30 to-brand-accent/20 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-brand-primary/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-brand-primary text-white text-xs font-bold px-2 py-1 rounded">Data Viz</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">National Census Portal</h3>
+                    <p class="text-slate-500 dark:text-slate-300 text-sm mb-4 line-clamp-2">Translating complex Tanzanian census datasets into actionable insights for public and government use.</p>
+                    <a href="{{ url_for('projects') }}" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1 text-sm">
+                        View Case Study <span>&rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-brand-accent/30 to-teal-400/20 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-brand-accent/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-brand-accent text-white text-xs font-bold px-2 py-1 rounded">Urban Planning</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">Dodoma 3D City Model</h3>
+                    <p class="text-slate-500 dark:text-slate-300 text-sm mb-4 line-clamp-2">Digitizing traditional 2D town plans into interactive 3D environments to enhance urban design accuracy for Tanzania's capital.</p>
+                    <a href="{{ url_for('projects') }}" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1 text-sm">
+                        View Case Study <span>&rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-purple-500/30 to-pink-400/20 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-purple-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
+                        <span class="bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded">AI & Remote Sensing</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">Coconut Tree Detection</h3>
+                    <p class="text-slate-500 dark:text-slate-300 text-sm mb-4 line-clamp-2">Using Python-based Geowombat and satellite imagery to optimize coastal resource management.</p>
+                    <a href="{{ url_for('projects') }}" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1 text-sm">
+                        View Case Study <span>&rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-10" data-scroll-animate>
+            <a href="{{ url_for('projects') }}" class="inline-flex items-center gap-2 text-brand-primary font-semibold hover:underline text-lg">
+                Explore All Projects
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA / GET IN TOUCH ===== -->
+<section class="py-20 bg-gradient-to-r from-brand-primary to-brand-accent">
+    <div class="max-w-4xl mx-auto px-4 text-center" data-scroll-animate>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Ready to Map the Future Together?</h2>
+        <p class="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+            Whether you are a student, researcher, organization, or government — join us as we plot the present, plan the future, and prospect sustainable opportunities for Tanzania.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="{{ url_for('contact') }}" class="px-8 py-4 bg-white text-brand-primary rounded-lg font-bold hover:bg-slate-100 transition shadow-lg">
+                Get In Touch
+            </a>
+            <a href="{{ url_for('services') }}" class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white/10 transition">
+                View Services
+            </a>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

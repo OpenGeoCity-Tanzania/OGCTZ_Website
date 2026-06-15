@@ -232,13 +232,98 @@ class InteractiveEffects {
   }
 }
 
+// 8. Typewriter Effect
+function setupTypewriter() {
+  const el = document.getElementById('typewriter-text');
+  if (!el) return;
+
+  const phrases = [
+    'Geospatial Innovation',
+    'Smart Urban Planning',
+    'Data-Driven Decisions',
+    'Resilient Communities',
+    'Spatial Intelligence',
+  ];
+
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  function type() {
+    const current = phrases[phraseIndex];
+    if (isDeleting) {
+      el.textContent = current.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = current.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let delay = isDeleting ? 50 : 100;
+
+    if (!isDeleting && charIndex === current.length) {
+      delay = 2000;
+      isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      delay = 400;
+    }
+
+    setTimeout(type, delay);
+  }
+
+  setTimeout(type, 800);
+}
+
+// 9. Animated Counters (scroll-triggered)
+function setupCounters() {
+  const counters = document.querySelectorAll('.counter');
+  if (counters.length === 0) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      const duration = 1800;
+      const stepTime = 16;
+      const steps = duration / stepTime;
+      let current = 0;
+
+      const increment = target / steps;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        const display = target >= 1000
+          ? (current >= 1000 ? (current / 1000).toFixed(current >= 10000 ? 0 : 1) + 'K' : Math.floor(current).toString())
+          : Math.floor(current).toString();
+        el.textContent = display + suffix;
+      }, stepTime);
+
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.3 });
+
+  counters.forEach(c => observer.observe(c));
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     new InteractiveEffects();
+    setupTypewriter();
+    setupCounters();
   });
 } else {
   new InteractiveEffects();
+  setupTypewriter();
+  setupCounters();
 }
 
 // Utility for fade-in on load
