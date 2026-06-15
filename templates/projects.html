@@ -3,62 +3,141 @@
 {% block title %}Projects{% endblock %}
 
 {% block content %}
-<section class="py-20 bg-brand-light">
+
+<!-- Hero -->
+<section class="py-20 bg-brand-dark/90 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-scroll-animate>
+        <span class="text-brand-primary text-sm font-bold uppercase tracking-widest">Our Work</span>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-4">Featured Projects</h1>
+        <p class="text-xl text-slate-300 max-w-2xl mx-auto">
+            Explore how OpenGeoCity Tanzania is transforming communities, cities, and ecosystems through geospatial intelligence.
+        </p>
+    </div>
+</section>
+
+<section class="py-20 bg-white/95 dark:bg-slate-900/90">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-brand-dark sm:text-4xl">Our Impact</h2>
-            <p class="mt-4 text-lg text-slate-600">Explore how we are transforming Tanzania with data.</p>
-        </div>
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100">
-                <div class="h-48 bg-slate-200 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+
+            <!-- Impact Wallet — FEATURED -->
+            <div class="lg:col-span-3 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group border-2 border-brand-primary/30 dark:border-brand-primary/20" data-card data-scroll-animate>
+                <div class="md:flex">
+                    <div class="md:w-2/5 h-56 md:h-auto bg-gradient-to-br from-brand-primary/20 via-brand-accent/10 to-teal-400/20 relative overflow-hidden flex items-center justify-center flex-shrink-0">
+                        <div class="text-center px-6">
+                            <div class="w-20 h-20 bg-brand-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <svg class="h-10 w-10 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <span class="bg-brand-primary text-white text-xs font-bold px-2 py-1 rounded-full">Field Intelligence</span>
+                                <span class="bg-brand-accent text-white text-xs font-bold px-2 py-1 rounded-full">Mobile App</span>
+                                <span class="bg-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full">Partner APIs</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8 md:p-10 flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="inline-block bg-brand-primary/10 text-brand-primary text-xs font-bold px-3 py-1 rounded-full border border-brand-primary/20 uppercase tracking-wide">Featured Project</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-extrabold text-brand-dark dark:text-white mb-3 group-hover:text-brand-primary transition">
+                                Impact Wallet
+                            </h3>
+                            <p class="text-slate-500 dark:text-slate-300 leading-relaxed mb-4">
+                                Impact Wallet is a field intelligence platform built for Tanzania — combining real-time geospatial data collection, partner API integrations, and a dedicated Android app to measure and track on-the-ground social and environmental impact.
+                            </p>
+                            <p class="text-slate-500 dark:text-slate-300 leading-relaxed mb-6">
+                                The platform empowers organizations, NGOs, and government agencies to deploy field agents, capture geo-tagged data points, and generate actionable impact reports — bridging the gap between field operations and strategic decision-making aligned with Tanzania's sustainable development goals.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">Geospatial Data Collection</span>
+                                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">Android Application</span>
+                                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">REST APIs</span>
+                                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">Impact Measurement</span>
+                                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">Tanzania</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <a href="https://impactwallet.co.tz" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white rounded-lg font-bold hover:bg-sky-600 transition shadow-[0_0_15px_rgba(14,165,233,0.2)]">
+                                Visit Platform
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                            <span class="text-slate-400 dark:text-slate-500 text-sm flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Tanzania
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- National Census Portal -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-brand-primary/20 to-sky-400/10 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-brand-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
                         <span class="bg-brand-primary text-white text-xs font-bold px-2 py-1 rounded">Data Viz</span>
                     </div>
                 </div>
                 <div class="p-8">
-                    <h3 class="text-xl font-bold text-brand-dark mb-2 group-hover:text-brand-primary transition">National Census Portal</h3>
-                    <p class="text-slate-500 mb-6 line-clamp-3">
-                        Developed the primary public-facing portal for Tanzanian census data dissemination, translating complex datasets into actionable insights.
+                    <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">National Census Portal</h3>
+                    <p class="text-slate-500 dark:text-slate-300 mb-6 line-clamp-3">
+                        Developed the primary public-facing portal for Tanzanian census data dissemination, translating complex datasets into actionable insights for government and citizens.
                     </p>
-                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center">
-                        View Case Study <span class="ml-1">&rarr;</span>
+                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1">
+                        View Case Study <span>&rarr;</span>
                     </a>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100">
-                <div class="h-48 bg-slate-200 relative overflow-hidden">
-                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+            <!-- Dodoma 3D City -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-brand-accent/20 to-teal-400/10 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-brand-accent/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
                         <span class="bg-brand-accent text-white text-xs font-bold px-2 py-1 rounded">Urban Planning</span>
                     </div>
                 </div>
                 <div class="p-8">
-                    <h3 class="text-xl font-bold text-brand-dark mb-2 group-hover:text-brand-primary transition">Dodoma 3D City</h3>
-                    <p class="text-slate-500 mb-6 line-clamp-3">
-                        Digitized traditional 2D town plans into interactive 3D environments to enhance urban design accuracy for the capital.
+                    <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">Dodoma 3D City</h3>
+                    <p class="text-slate-500 dark:text-slate-300 mb-6 line-clamp-3">
+                        Digitized traditional 2D town plans into interactive 3D environments to enhance urban design accuracy for Tanzania's capital city.
                     </p>
-                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center">
-                        View Case Study <span class="ml-1">&rarr;</span>
+                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1">
+                        View Case Study <span>&rarr;</span>
                     </a>
                 </div>
             </div>
 
-             <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100">
-                <div class="h-48 bg-slate-200 relative overflow-hidden">
-                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+            <!-- Coconut Tree Detection -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition duration-300 group border border-slate-100 dark:border-slate-700" data-card data-scroll-animate>
+                <div class="h-48 bg-gradient-to-br from-purple-500/20 to-pink-400/10 relative overflow-hidden flex items-center justify-center">
+                    <svg class="h-16 w-16 text-purple-400/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                    </svg>
+                    <div class="absolute bottom-4 left-4">
                         <span class="bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded">AI & Remote Sensing</span>
                     </div>
                 </div>
                 <div class="p-8">
-                    <h3 class="text-xl font-bold text-brand-dark mb-2 group-hover:text-brand-primary transition">Coconut Tree Detection</h3>
-                    <p class="text-slate-500 mb-6 line-clamp-3">
-                        Using Python-based Geowombat libraries and Satellite imagery to optimize coastal resource management.
+                    <h3 class="text-xl font-bold text-brand-dark dark:text-white mb-2 group-hover:text-brand-primary transition">Coconut Tree Detection</h3>
+                    <p class="text-slate-500 dark:text-slate-300 mb-6 line-clamp-3">
+                        Using Python-based Geowombat libraries and satellite imagery to optimize coastal resource management across Tanzania's coastline.
                     </p>
-                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center">
-                        View Case Study <span class="ml-1">&rarr;</span>
+                    <a href="#" class="text-brand-primary font-semibold hover:underline inline-flex items-center gap-1">
+                        View Case Study <span>&rarr;</span>
                     </a>
                 </div>
             </div>
@@ -66,4 +145,5 @@
         </div>
     </div>
 </section>
+
 {% endblock %}
