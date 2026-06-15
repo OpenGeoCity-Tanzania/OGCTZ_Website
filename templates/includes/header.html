@@ -2,12 +2,10 @@
     <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div class="flex justify-between items-center h-14 sm:h-16 md:h-20">
             <div class="flex items-center">
-                <a href="{{ url_for('home') }}" class="flex-shrink-0 flex items-center gap-1 sm:gap-2 group">
-                    <div class="bg-brand-primary/10 dark:bg-brand-primary/20 p-1.5 sm:p-2 rounded-lg group-hover:bg-brand-primary/20 dark:group-hover:bg-brand-primary/30 transition">
-                         <svg class="h-6 w-6 sm:h-8 sm:w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7" />
-                        </svg>
-                    </div>
+                <a href="{{ url_for('home') }}" class="flex-shrink-0 flex items-center gap-2 group">
+                    <img src="{{ url_for('static', filename='img/favicons/fav_org/android-chrome-192x192.png') }}"
+                         alt="OpenGeoCity Tanzania logo"
+                         class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg object-contain group-hover:opacity-90 transition">
                     <span class="text-lg sm:text-2xl font-bold text-brand-dark dark:text-brand-light tracking-tight">
                         OpenGeoCity<span class="text-brand-primary">Tanzania</span>
                     </span>
