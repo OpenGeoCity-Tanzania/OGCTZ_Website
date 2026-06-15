@@ -5,8 +5,55 @@ load_dotenv()
 ## ...existing code...
 from flask import Flask, render_template, request, flash, redirect, url_for, Response, session
 import os
+import time
+import urllib.request
+import json
 from authlib.integrations.flask_client import OAuth
 import random
+
+# ── YouTube live feed helpers ─────────────────────────────────────────────────
+_yt_cache = {"videos": [], "fetched_at": 0}
+YT_CACHE_TTL = 1800  # 30 minutes
+
+def fetch_youtube_videos(max_results=12):
+    """Fetch latest videos from the channel using YouTube Data API v3."""
+    global _yt_cache
+    now = time.time()
+    if _yt_cache["videos"] and (now - _yt_cache["fetched_at"]) < YT_CACHE_TTL:
+        return _yt_cache["videos"]
+
+    api_key = os.environ.get("YOUTUBE_API_KEY", "")
+    channel_id = os.environ.get("YOUTUBE_CHANNEL_ID", "")
+    if not api_key or not channel_id:
+        return []
+
+    try:
+        url = (
+            f"https://www.googleapis.com/youtube/v3/search"
+            f"?key={api_key}&channelId={channel_id}"
+            f"&part=snippet&order=date&type=video&maxResults={max_results}"
+        )
+        with urllib.request.urlopen(url, timeout=6) as resp:
+            data = json.loads(resp.read().decode())
+
+        videos = []
+        for item in data.get("items", []):
+            vid_id = item["id"].get("videoId", "")
+            snip = item["snippet"]
+            videos.append({
+                "id": vid_id,
+                "title": snip.get("title", ""),
+                "description": snip.get("description", ""),
+                "thumbnail": snip.get("thumbnails", {}).get("medium", {}).get("url", ""),
+                "published": snip.get("publishedAt", "")[:10],
+                "url": f"https://www.youtube.com/watch?v={vid_id}",
+            })
+
+        _yt_cache["videos"] = videos
+        _yt_cache["fetched_at"] = now
+        return videos
+    except Exception:
+        return _yt_cache["videos"] or []
 
 # Absolute path of current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -214,7 +261,8 @@ def contact():
 
 @app.route("/resources")
 def resources():
-    return render_template("resources.html", page_title="Resources")
+    youtube_videos = fetch_youtube_videos()
+    return render_template("resources.html", page_title="Resources", youtube_videos=youtube_videos)
 
 def gis_course():
     return render_template("gis_course/gis_course.html", page_title="GIS Fundamentals Guide")
