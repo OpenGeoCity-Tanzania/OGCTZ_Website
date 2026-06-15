@@ -563,6 +563,98 @@ html.dark :focus-visible {
     animation: aurora-pulse 6s ease-in-out infinite;
 }
 
+/* ===== 1. HEADING UNDERLINE DRAW ===== */
+.heading-underline {
+    position: relative;
+    display: inline-block;
+}
+
+.heading-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0ea5e9, #10b981);
+    border-radius: 2px;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.heading-underline.is-visible::after {
+    width: 100%;
+}
+
+/* ===== 2. PARTNERS MARQUEE ===== */
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ===== 3. CTA GRADIENT SHIFT ===== */
+@keyframes gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.cta-gradient-animate {
+    background-size: 300% 300%;
+    animation: gradient-shift 8s ease infinite;
+}
+
+/* ===== 5. PAGE TRANSITION PROGRESS BAR ===== */
+#page-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #0ea5e9, #10b981);
+    z-index: 99999;
+    transition: width 0.25s ease-out, opacity 0.4s ease;
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+}
+
+/* ===== 6. HERO HEX GRID FLOAT ===== */
+@keyframes hex-float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.06; }
+    33%       { transform: translateY(-12px) rotate(2deg); opacity: 0.10; }
+    66%       { transform: translateY(6px) rotate(-1deg); opacity: 0.07; }
+}
+
+.hex-grid-bg {
+    animation: hex-float 10s ease-in-out infinite;
+}
+
+/* ===== 7. CARD SHIMMER ===== */
+@keyframes card-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.card-shimmer {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(14, 165, 233, 0.06) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: card-shimmer 1.8s ease-out 1;
+}
+
 /* ===== UX PRO MAX: PREFERS-REDUCED-MOTION (full guard) ===== */
 @media (prefers-reduced-motion: reduce) {
     [data-scroll-animate] {
@@ -581,8 +673,17 @@ html.dark :focus-visible {
     .animate-blob,
     .animate-aurora,
     .animate-bounce,
-    .animate-shimmer-slide {
+    .animate-shimmer-slide,
+    .marquee-track,
+    .cta-gradient-animate,
+    .hex-grid-bg,
+    .card-shimmer {
         animation: none !important;
+    }
+
+    .heading-underline::after {
+        transition: none;
+        width: 100%;
     }
 
     .typewriter-cursor {

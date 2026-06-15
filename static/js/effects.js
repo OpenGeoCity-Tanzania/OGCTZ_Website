@@ -278,10 +278,22 @@ function setupTypewriter() {
   setTimeout(type, 800);
 }
 
-// 9. Animated Counters (scroll-triggered)
+// 9. Animated Counters — easeOutExpo + comma formatting
 function setupCounters() {
   const counters = document.querySelectorAll('.counter');
   if (counters.length === 0) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  }
+
+  function formatNumber(n, target) {
+    if (target >= 10000) return n.toLocaleString();
+    if (target >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return Math.floor(n).toString();
+  }
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -289,30 +301,92 @@ function setupCounters() {
       const el = entry.target;
       const target = parseInt(el.getAttribute('data-target'), 10);
       const suffix = el.getAttribute('data-suffix') || '';
-      const duration = 1800;
-      const stepTime = 16;
-      const steps = duration / stepTime;
-      let current = 0;
 
-      const increment = target / steps;
+      if (reducedMotion) {
+        el.textContent = formatNumber(target, target) + suffix;
+        observer.unobserve(el);
+        return;
+      }
 
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
-        }
-        const display = target >= 1000
-          ? (current >= 1000 ? (current / 1000).toFixed(current >= 10000 ? 0 : 1) + 'K' : Math.floor(current).toString())
-          : Math.floor(current).toString();
-        el.textContent = display + suffix;
-      }, stepTime);
+      const duration = 2000;
+      const startTime = performance.now();
 
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutExpo(progress);
+        const current = eased * target;
+        el.textContent = formatNumber(current, target) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
       observer.unobserve(el);
     });
   }, { threshold: 0.3 });
 
   counters.forEach(c => observer.observe(c));
+}
+
+// 10. Heading underline draw on scroll
+function setupHeadingUnderlines() {
+  const headings = document.querySelectorAll('.heading-underline');
+  if (!headings.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  headings.forEach(h => observer.observe(h));
+}
+
+// 11. Card shimmer on scroll reveal
+function setupCardShimmer() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('card-shimmer');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('[data-card]').forEach(c => observer.observe(c));
+}
+
+// 12. Page progress bar on navigation
+function setupPageProgressBar() {
+  const bar = document.createElement('div');
+  bar.id = 'page-progress-bar';
+  document.body.prepend(bar);
+
+  document.querySelectorAll('a[href]').forEach(link => {
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto') || href.startsWith('http') || link.target === '_blank') return;
+
+    link.addEventListener('click', (e) => {
+      bar.style.width = '0%';
+      bar.style.opacity = '1';
+      // Animate to 80% quickly, rest completes on load
+      requestAnimationFrame(() => {
+        bar.style.transition = 'width 0.4s ease-out';
+        bar.style.width = '80%';
+      });
+    });
+  });
+
+  window.addEventListener('load', () => {
+    bar.style.width = '100%';
+    setTimeout(() => { bar.style.opacity = '0'; }, 300);
+    setTimeout(() => { bar.style.width = '0%'; bar.style.transition = 'none'; }, 700);
+  });
 }
 
 // Initialize when DOM is ready
@@ -321,11 +395,17 @@ if (document.readyState === 'loading') {
     new InteractiveEffects();
     setupTypewriter();
     setupCounters();
+    setupHeadingUnderlines();
+    setupCardShimmer();
+    setupPageProgressBar();
   });
 } else {
   new InteractiveEffects();
   setupTypewriter();
   setupCounters();
+  setupHeadingUnderlines();
+  setupCardShimmer();
+  setupPageProgressBar();
 }
 
 // Utility for fade-in on load
