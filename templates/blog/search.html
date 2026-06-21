@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-20 bg-brand-dark overflow-hidden relative">
+    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Search Blog</h1>
+        <form method="GET" action="{{ url_for('blog_search') }}" class="max-w-2xl mx-auto mt-8">
+            <div class="flex items-center bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg">
+                <input type="text" name="q" value="{{ q }}" placeholder="Search articles, topics, authors..."
+                       class="flex-1 px-6 py-3 bg-transparent text-slate-900 dark:text-white focus:outline-none">
+                <button type="submit" class="px-6 py-3 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-full transition">Search</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-50/95 dark:bg-slate-900/90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if q and posts %}
+            <p class="text-slate-600 dark:text-slate-300 mb-8">{{ posts.total }} result{{ 's' if posts.total != 1 else '' }} for "{{ q }}"</p>
+            {% if posts.items %}
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for post in posts.items %}
+                <article class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
+                    <a href="{{ url_for('blog_post', slug=post.slug) }}" class="block h-52 overflow-hidden">
+                        {% if post.featured_image %}
+                        <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                        {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center">
+                            <svg class="h-12 w-12 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-3">
+                            <span>{{ post.published_at.strftime('%b %d, %Y') if post.published_at else post.created_at.strftime('%b %d, %Y') }}</span>
+                            <span class="ml-auto">{{ post.read_time }} min read</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-brand-dark dark:text-white mb-2 hover:text-brand-primary transition-colors">
+                            <a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a>
+                        </h2>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 flex-1">
+                            {{ post.excerpt or (post.content | striptags | truncate(160)) }}
+                        </p>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% if posts.has_prev or posts.has_next %}
+            <div class="flex items-center justify-center gap-3 mt-12">
+                {% if posts.has_prev %}<a href="{{ url_for('blog_search', q=q, page=posts.prev_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">← Previous</a>{% endif %}
+                <span class="text-sm text-slate-500 dark:text-slate-400">Page {{ posts.page }} of {{ posts.pages }}</span>
+                {% if posts.has_next %}<a href="{{ url_for('blog_search', q=q, page=posts.next_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">Next →</a>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <p class="text-slate-500 dark:text-slate-400">No posts found for "{{ q }}".</p>
+            </div>
+            {% endif %}
+        {% elif q and not posts %}
+            <p class="text-slate-500 dark:text-slate-400">Enter a search term above.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

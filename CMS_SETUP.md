@@ -50,13 +50,22 @@ Blog features inspired by leading platforms:
 
 - **Rich text editor** — TinyMCE-based WYSIWYG editor for formatting, links, lists, images, and code.
 - **Editable URL slug** — Control the post URL (`/blog/your-slug`). Auto-generated from the title if left blank.
-- **SEO meta fields** — Set custom `<meta name="description">`, OpenGraph title, and description per post.
+- **SEO meta fields** — Set custom `<meta name="description">`, OpenGraph title, and description per post; canonical URLs.
+- **Categories** — WordPress-style taxonomy for broad topic organization. Public category pages at `/blog/category/<slug>`.
 - **Tags** — Assign comma-separated tags to posts. Public tag pages at `/blog/tag/<tag>`.
 - **Featured posts** — Mark posts as featured to highlight them at the top of the listing.
 - **Publishing status** — Draft, Published, or Scheduled. Scheduled posts go live automatically at the chosen UTC time.
 - **RSS feed** — `/blog/rss.xml` syndicates the latest 20 published posts.
 - **Social sharing** — Twitter and LinkedIn share buttons on every post.
 - **Related posts** — Automatically shows related published posts at the bottom of an article.
+- **Search** — `/blog/search?q=...` searches titles, excerpts, and content.
+- **Monthly archive** — `/blog/archive/<year>/<month>` lists posts published in that month.
+- **Comments** — WordPress-style moderated comments. Readers submit; admins approve before display.
+- **Newsletter subscriptions** — `/blog/subscribe` collects subscriber emails; managed in the admin panel.
+- **Table of contents** — Auto-generated from `h2`/`h3` headings in the post body.
+- **Reading progress bar** — Visual progress indicator as readers scroll.
+- **View counter** — Tracks public post views (excludes logged-in admins).
+- **Author profile** — Author name and avatar displayed at the end of each post.
 
 ## Page Content Blocks
 

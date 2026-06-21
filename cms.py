@@ -48,6 +48,18 @@ class AdminUser(UserMixin, db.Model):
         return self.role in ("superadmin", "admin", "editor") and self.is_active
 
 
+class Category(db.Model):
+    __tablename__ = "blog_categories"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    slug = db.Column(db.String(120), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Category {self.slug}>"
+
+
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +75,9 @@ class BlogPost(db.Model):
     status = db.Column(db.String(20), default="draft")  # draft, published, scheduled
     published = db.Column(db.Boolean, default=False)
     is_featured = db.Column(db.Boolean, default=False)
+    view_count = db.Column(db.Integer, default=0)
+    category_id = db.Column(db.Integer, db.ForeignKey("blog_categories.id"), nullable=True)
+    category = db.relationship("Category", backref="posts")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     published_at = db.Column(db.DateTime, nullable=True)
@@ -91,6 +106,33 @@ class BlogPost(db.Model):
         if self.scheduled_at and self.scheduled_at > datetime.utcnow():
             return False
         return True
+
+
+class Comment(db.Model):
+    __tablename__ = "blog_comments"
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"), nullable=False)
+    author_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    is_approved = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    post = db.relationship("BlogPost", backref="comments")
+
+    def __repr__(self):
+        return f"<Comment {self.id} on post {self.post_id}>"
+
+
+class Subscriber(db.Model):
+    __tablename__ = "blog_subscribers"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Subscriber {self.email}>"
 
 
 class CMSImage(db.Model):
@@ -153,6 +195,53 @@ def parse_scheduled_datetime(value):
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def extract_headings(html_content):
+    """Extract h2/h3 headings from HTML for a table of contents.
+    Returns list of dicts with id, level, text.
+    """
+    if not html_content:
+        return []
+    headings = []
+    pattern = re.compile(r"<h([23])[^>]*>(.*?)</h\1>", re.IGNORECASE | re.DOTALL)
+    for match in pattern.finditer(html_content):
+        level = int(match.group(1))
+        text = re.sub(r"<[^>]+>", "", match.group(2)).strip()
+        if text:
+            anchor = slugify(text)
+            headings.append({"level": level, "text": text, "anchor": anchor})
+    return headings
+
+
+def add_heading_ids(html_content):
+    """Add id attributes to h2/h3 headings so TOC can link to them."""
+    if not html_content:
+        return html_content
+    seen = set()
+
+    def replace_heading(match):
+        level = match.group(1)
+        attrs = match.group(2)
+        inner = match.group(3)
+        text = re.sub(r"<[^>]+>", "", inner).strip()
+        anchor = slugify(text)
+        # Ensure uniqueness
+        original = anchor
+        counter = 1
+        while anchor in seen:
+            anchor = f"{original}-{counter}"
+            counter += 1
+        seen.add(anchor)
+        # Inject id into existing attributes or add new
+        if 'id="' in attrs or "id='" in attrs:
+            attrs = re.sub(r'id=["\'][^"\']*["\']', f'id="{anchor}"', attrs)
+        else:
+            attrs = f'{attrs} id="{anchor}"'.strip()
+        return f"<h{level} {attrs}>{inner}</h{level}>"
+
+    pattern = re.compile(r"<h([23])([^>]*)>(.*?)</h\1>", re.IGNORECASE | re.DOTALL)
+    return pattern.sub(replace_heading, html_content)
 
 
 def slugify(value, max_length=200):

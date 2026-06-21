@@ -5,6 +5,7 @@ load_dotenv()
 ## ...existing code...
 from flask import Flask, render_template, request, flash, redirect, url_for, Response, session, send_from_directory
 import os
+import re
 import time
 import urllib.request
 import json
@@ -16,9 +17,10 @@ import random
 
 # ── Content Management System ─────────────────────────────────────────────────
 from cms import (
-    init_cms, db, AdminUser, BlogPost, CMSImage, SiteContent,
+    init_cms, db, AdminUser, BlogPost, Category, Comment, Subscriber, CMSImage, SiteContent,
     save_uploaded_file, make_unique_slug, slugify, allowed_file, get_or_create_content,
-    get_content, published_posts_query, create_admin_user, parse_scheduled_datetime
+    get_content, published_posts_query, create_admin_user, parse_scheduled_datetime,
+    extract_headings, add_heading_ids
 )
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -75,6 +77,8 @@ app = Flask(
     static_folder=os.path.join(current_dir, "static"),
     static_url_path="/static"
 )
+app.jinja_env.filters["add_heading_ids"] = add_heading_ids
+app.jinja_env.filters["excerpt"] = lambda text, length=160: re.sub(r"<[^>]+>", "", text or "").strip()[:length] + "..." if len(re.sub(r"<[^>]+>", "", text or "")) > length else re.sub(r"<[^>]+>", "", text or "").strip()
 
 # CMS configuration
 os.makedirs(os.path.join(current_dir, "data"), exist_ok=True)
@@ -320,7 +324,8 @@ def blog_index():
     posts = _visible_posts_query()\
         .order_by(BlogPost.is_featured.desc(), BlogPost.published_at.desc(), BlogPost.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
-    return render_template("blog/index.html", page_title="Blog", posts=posts)
+    all_categories = Category.query.order_by(Category.name).all()
+    return render_template("blog/index.html", page_title="Blog", posts=posts, all_categories=all_categories)
 
 
 @app.route("/blog/<slug>")
@@ -328,10 +333,27 @@ def blog_post(slug):
     post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if not post.is_visible() and not (current_user.is_authenticated and current_user.can_manage_content()):
         return render_template("404.html"), 404
+
+    # Increment view count (only for public visitors)
+    if not current_user.is_authenticated:
+        post.view_count = (post.view_count or 0) + 1
+        db.session.commit()
+
     related = _visible_posts_query().filter(BlogPost.id != post.id)\
         .order_by(BlogPost.published_at.desc()).limit(3).all()
+    approved_comments = Comment.query.filter_by(post_id=post.id, is_approved=True).order_by(Comment.created_at.desc()).all()
+    headings = extract_headings(post.content)
     page_description = post.meta_description or post.excerpt or ""
-    return render_template("blog/post.html", page_title=post.meta_title or post.title, page_description=page_description, post=post, related=related)
+    return render_template(
+        "blog/post.html",
+        page_title=post.meta_title or post.title,
+        page_description=page_description,
+        post=post,
+        related=related,
+        comments=approved_comments,
+        headings=headings,
+        canonical_url=os.environ.get("SITE_URL", "https://ogctz.org") + url_for("blog_post", slug=post.slug)
+    )
 
 
 @app.route("/blog/tag/<tag>")
@@ -342,7 +364,8 @@ def blog_tag(tag):
     posts = _visible_posts_query().filter(BlogPost.tags.contains(tag))\
         .order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
-    return render_template("blog/index.html", page_title=f"Posts tagged \"{tag}\"", posts=posts, tag=tag)
+    all_categories = Category.query.order_by(Category.name).all()
+    return render_template("blog/index.html", page_title=f"Posts tagged \"{tag}\"", posts=posts, tag=tag, all_categories=all_categories)
 
 
 @app.route("/blog/rss.xml")
@@ -352,6 +375,89 @@ def blog_rss():
     posts = _visible_posts_query().order_by(BlogPost.published_at.desc()).limit(20).all()
     rss = render_template("blog/rss.xml", posts=posts, site_url=site_url, now=datetime.utcnow())
     return Response(rss, mimetype="application/rss+xml")
+
+
+@app.route("/blog/category/<slug>")
+def blog_category(slug):
+    """Filter posts by category."""
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    page = request.args.get("page", 1, type=int)
+    per_page = 9
+    posts = _visible_posts_query().filter(BlogPost.category_id == category.id)\
+        .order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    all_categories = Category.query.order_by(Category.name).all()
+    return render_template("blog/index.html", page_title=f"Category: {category.name}", posts=posts, category=category, all_categories=all_categories)
+
+
+@app.route("/blog/archive/<int:year>/<int:month>")
+def blog_archive(year, month):
+    """Monthly archive of posts."""
+    start = datetime(year, month, 1)
+    end = datetime(year, month + 1, 1) if month < 12 else datetime(year + 1, 1, 1)
+    posts = _visible_posts_query().filter(
+        BlogPost.published_at >= start,
+        BlogPost.published_at < end
+    ).order_by(BlogPost.published_at.desc()).paginate(page=1, per_page=50, error_out=False)
+    return render_template("blog/archive.html", page_title=f"Archive {month:02d}/{year}", posts=posts, year=year, month=month)
+
+
+@app.route("/blog/search")
+def blog_search():
+    """Search posts by title, excerpt, or content."""
+    q = request.args.get("q", "").strip()
+    page = request.args.get("page", 1, type=int)
+    per_page = 9
+    if q:
+        like = f"%{q}%"
+        posts = _visible_posts_query().filter(
+            db.or_(
+                BlogPost.title.ilike(like),
+                BlogPost.excerpt.ilike(like),
+                BlogPost.content.ilike(like)
+            )
+        ).order_by(BlogPost.published_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    else:
+        posts = None
+    return render_template("blog/search.html", page_title=f"Search: {q}" if q else "Search", posts=posts, q=q)
+
+
+@app.route("/blog/<slug>/comment", methods=["POST"])
+def blog_comment(slug):
+    """Submit a comment on a post (pending approval)."""
+    post = BlogPost.query.filter_by(slug=slug).first_or_404()
+    if not post.is_visible():
+        return render_template("404.html"), 404
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip()
+    content = request.form.get("content", "").strip()
+    if not name or not email or not content:
+        flash("Please fill in all comment fields.", "error")
+        return redirect(url_for("blog_post", slug=post.slug) + "#comments")
+    comment = Comment(post_id=post.id, author_name=name, email=email, content=content)
+    db.session.add(comment)
+    db.session.commit()
+    flash("Your comment has been submitted and is awaiting approval.", "success")
+    return redirect(url_for("blog_post", slug=post.slug) + "#comments")
+
+
+@app.route("/blog/subscribe", methods=["POST"])
+def blog_subscribe():
+    """Subscribe to the blog newsletter."""
+    email = request.form.get("email", "").strip()
+    name = request.form.get("name", "").strip()
+    if not email or "@" not in email:
+        flash("Please enter a valid email address.", "error")
+        return redirect(url_for("blog_index") + "#subscribe")
+    existing = Subscriber.query.filter_by(email=email).first()
+    if existing:
+        flash("You are already subscribed.", "success")
+    else:
+        subscriber = Subscriber(email=email, name=name or None)
+        db.session.add(subscriber)
+        db.session.commit()
+        flash("Thank you for subscribing!", "success")
+    return redirect(url_for("blog_index") + "#subscribe")
 
 
 # ── Role-based Access Helpers ────────────────────────────────────────────────
@@ -427,6 +533,7 @@ def _apply_post_form(post, form, is_new=False):
     status = form.get("status", "draft")
     featured = bool(form.get("featured"))
     scheduled_at = parse_scheduled_datetime(form.get("scheduled_at", "").strip())
+    category_id = form.get("category_id", "").strip()
 
     if not title or not content:
         return False, "Title and content are required."
@@ -455,6 +562,11 @@ def _apply_post_form(post, form, is_new=False):
     post.meta_description = meta_description or None
     post.is_featured = featured
     post.scheduled_at = scheduled_at
+    if category_id:
+        cat = Category.query.get(int(category_id))
+        post.category_id = cat.id if cat else None
+    else:
+        post.category_id = None
 
     # Handle status transitions
     was_published = post.published
@@ -494,29 +606,32 @@ def admin_post_new():
         ok, err = _apply_post_form(post, request.form, is_new=True)
         if not ok:
             flash(err, "error")
-            return render_template("admin/post_form.html", page_title="New Post", post=None)
+            categories = Category.query.order_by(Category.name).all()
+            return render_template("admin/post_form.html", page_title="New Post", post=None, categories=categories)
         db.session.add(post)
         db.session.commit()
         flash("Post created successfully.", "success")
         return redirect(url_for("admin_posts"))
 
-    return render_template("admin/post_form.html", page_title="New Post", post=None)
+    categories = Category.query.order_by(Category.name).all()
+    return render_template("admin/post_form.html", page_title="New Post", post=None, categories=categories)
 
 
 @app.route("/admin/posts/<int:post_id>/edit", methods=["GET", "POST"])
 @login_required
 def admin_post_edit(post_id):
     post = BlogPost.query.get_or_404(post_id)
+    categories = Category.query.order_by(Category.name).all()
     if request.method == "POST":
         ok, err = _apply_post_form(post, request.form, is_new=False)
         if not ok:
             flash(err, "error")
-            return render_template("admin/post_form.html", page_title="Edit Post", post=post)
+            return render_template("admin/post_form.html", page_title="Edit Post", post=post, categories=categories)
         db.session.commit()
         flash("Post updated successfully.", "success")
         return redirect(url_for("admin_posts"))
 
-    return render_template("admin/post_form.html", page_title="Edit Post", post=post)
+    return render_template("admin/post_form.html", page_title="Edit Post", post=post, categories=categories)
 
 
 @app.route("/admin/posts/<int:post_id>/delete", methods=["POST"])
@@ -691,6 +806,99 @@ def admin_user_delete(user_id):
     db.session.commit()
     flash("User deleted.", "success")
     return redirect(url_for("admin_users"))
+
+
+# ── Admin Categories ──────────────────────────────────────────────────────────
+
+@app.route("/admin/categories")
+@login_required
+def admin_categories():
+    categories = Category.query.order_by(Category.name).all()
+    return render_template("admin/categories.html", page_title="Categories", categories=categories)
+
+
+@app.route("/admin/categories/new", methods=["POST"])
+@login_required
+def admin_category_new():
+    name = request.form.get("name", "").strip()
+    description = request.form.get("description", "").strip()
+    if not name:
+        flash("Category name is required.", "error")
+        return redirect(url_for("admin_categories"))
+    slug = make_unique_slug(name)
+    if Category.query.filter_by(slug=slug).first():
+        flash("Category already exists.", "error")
+        return redirect(url_for("admin_categories"))
+    cat = Category(name=name, slug=slug, description=description or None)
+    db.session.add(cat)
+    db.session.commit()
+    flash("Category created.", "success")
+    return redirect(url_for("admin_categories"))
+
+
+@app.route("/admin/categories/<int:cat_id>/delete", methods=["POST"])
+@login_required
+def admin_category_delete(cat_id):
+    cat = Category.query.get_or_404(cat_id)
+    BlogPost.query.filter_by(category_id=cat.id).update({"category_id": None})
+    db.session.delete(cat)
+    db.session.commit()
+    flash("Category deleted.", "success")
+    return redirect(url_for("admin_categories"))
+
+
+# ── Admin Comments ─────────────────────────────────────────────────────────────
+
+@app.route("/admin/comments")
+@login_required
+def admin_comments():
+    status = request.args.get("status", "pending")
+    if status == "approved":
+        comments = Comment.query.filter_by(is_approved=True).order_by(Comment.created_at.desc()).all()
+    elif status == "pending":
+        comments = Comment.query.filter_by(is_approved=False).order_by(Comment.created_at.desc()).all()
+    else:
+        comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    return render_template("admin/comments.html", page_title="Comments", comments=comments, status=status)
+
+
+@app.route("/admin/comments/<int:comment_id>/approve", methods=["POST"])
+@login_required
+def admin_comment_approve(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    comment.is_approved = True
+    db.session.commit()
+    flash("Comment approved.", "success")
+    return redirect(url_for("admin_comments", status="pending"))
+
+
+@app.route("/admin/comments/<int:comment_id>/delete", methods=["POST"])
+@login_required
+def admin_comment_delete(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    db.session.delete(comment)
+    db.session.commit()
+    flash("Comment deleted.", "success")
+    return redirect(url_for("admin_comments"))
+
+
+# ── Admin Subscribers ──────────────────────────────────────────────────────────
+
+@app.route("/admin/subscribers")
+@login_required
+def admin_subscribers():
+    subscribers = Subscriber.query.order_by(Subscriber.created_at.desc()).all()
+    return render_template("admin/subscribers.html", page_title="Subscribers", subscribers=subscribers)
+
+
+@app.route("/admin/subscribers/<int:sub_id>/delete", methods=["POST"])
+@login_required
+def admin_subscriber_delete(sub_id):
+    sub = Subscriber.query.get_or_404(sub_id)
+    db.session.delete(sub)
+    db.session.commit()
+    flash("Subscriber removed.", "success")
+    return redirect(url_for("admin_subscribers"))
 
 
 # ── Admin Setup (one-time) ───────────────────────────────────────────────────

@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Comments</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Moderate reader comments.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_comments', status='pending') }}" class="px-4 py-2 rounded-lg text-sm font-medium {% if status == 'pending' %}bg-brand-primary text-white{% else %}bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300{% endif %}">Pending</a>
+        <a href="{{ url_for('admin_comments', status='approved') }}" class="px-4 py-2 rounded-lg text-sm font-medium {% if status == 'approved' %}bg-brand-primary text-white{% else %}bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300{% endif %}">Approved</a>
+        <a href="{{ url_for('admin_comments', status='all') }}" class="px-4 py-2 rounded-lg text-sm font-medium {% if status == 'all' %}bg-brand-primary text-white{% else %}bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300{% endif %}">All</a>
+    </div>
+</div>
+
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                <tr>
+                    <th class="px-6 py-3 font-medium">Post</th>
+                    <th class="px-6 py-3 font-medium">Author</th>
+                    <th class="px-6 py-3 font-medium">Comment</th>
+                    <th class="px-6 py-3 font-medium">Date</th>
+                    <th class="px-6 py-3 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for comment in comments %}
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <a href="{{ url_for('blog_post', slug=comment.post.slug) }}" target="_blank" class="text-brand-primary hover:underline">{{ comment.post.title }}</a>
+                    </td>
+                    <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                        {{ comment.author_name }}<br>
+                        <span class="text-xs text-slate-400">{{ comment.email }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-600 dark:text-slate-300 max-w-md">{{ comment.content }}</td>
+                    <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ comment.created_at.strftime('%b %d, %Y') }}</td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-3">
+                            {% if not comment.is_approved %}
+                            <form action="{{ url_for('admin_comment_approve', comment_id=comment.id) }}" method="POST" class="inline">
+                                <button type="submit" class="text-green-500 hover:text-green-600 font-medium">Approve</button>
+                            </form>
+                            {% endif %}
+                            <form action="{{ url_for('admin_comment_delete', comment_id=comment.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this comment?')">
+                                <button type="submit" class="text-red-500 hover:text-red-600 font-medium">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
+                        No comments found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

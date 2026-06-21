@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-20 bg-brand-dark overflow-hidden relative">
+    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Archive {{ month:02d }}/{{ year }}</h1>
+        <p class="text-xl text-slate-300 max-w-2xl mx-auto">All posts published this month.</p>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-50/95 dark:bg-slate-900/90">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if posts.items %}
+        <div class="space-y-6">
+            {% for post in posts.items %}
+            <article class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 hover:shadow-lg transition flex items-start gap-6">
+                {% if post.featured_image %}
+                <a href="{{ url_for('blog_post', slug=post.slug) }}" class="hidden sm:block w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                    <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </a>
+                {% endif %}
+                <div class="flex-1">
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">{{ post.published_at.strftime('%b %d, %Y') }}</div>
+                    <h2 class="text-xl font-bold text-brand-dark dark:text-white mb-2 hover:text-brand-primary transition-colors">
+                        <a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a>
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm line-clamp-2">
+                        {{ post.excerpt or (post.content | striptags | truncate(160)) }}
+                    </p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+            <p class="text-slate-500 dark:text-slate-400">No posts published in this month.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
