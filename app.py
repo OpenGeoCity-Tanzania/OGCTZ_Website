@@ -3,13 +3,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ## ...existing code...
-from flask import Flask, render_template, request, flash, redirect, url_for, Response, session
+from flask import Flask, render_template, request, flash, redirect, url_for, Response, session, send_from_directory
 import os
 import time
 import urllib.request
 import json
+from datetime import datetime
+from werkzeug.utils import secure_filename
 from authlib.integrations.flask_client import OAuth
 import random
+
+# ── Content Management System ─────────────────────────────────────────────────
+from cms import (
+    init_cms, db, AdminUser, BlogPost, CMSImage, SiteContent,
+    save_uploaded_file, make_unique_slug, allowed_file, get_or_create_content,
+    get_content, published_posts_query, create_admin_user
+)
+from flask_login import login_required, login_user, logout_user, current_user
 
 # ── YouTube live feed helpers ─────────────────────────────────────────────────
 _yt_cache = {"videos": [], "fetched_at": 0}
@@ -64,6 +74,16 @@ app = Flask(
     static_folder=os.path.join(current_dir, "static"),
     static_url_path="/static"
 )
+
+# CMS configuration
+os.makedirs(os.path.join(current_dir, "data"), exist_ok=True)
+_db_path = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(current_dir, 'data', 'opengeocity.db').replace(os.sep, '/')}")
+app.config["SQLALCHEMY_DATABASE_URI"] = _db_path
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB uploads
+
+# Initialize CMS database and login
+init_cms(app)
 
 # OAuth setup
 oauth = OAuth(app)
@@ -221,18 +241,31 @@ MODULE_ONE_QUESTIONS = [
 # Global variables for templates
 @app.context_processor
 def inject_global_vars():
+    # Pull editable content from CMS; fallback to defaults if DB not ready
+    try:
+        cms_email = get_content("site_contact_email", "global", "info@ogctz.org")
+        cms_phone = get_content("site_contact_phone", "global", "+255 700 000 000")
+        cms_footer = get_content("footer_about", "global",
+            "OpenGeoCity Tanzania is a premier NGO specializing in geospatial innovation and data-driven urban strategy in Dodoma.")
+    except Exception:
+        cms_email, cms_phone, cms_footer = "info@ogctz.org", "+255 700 000 000", ""
+
     return {
         "site_name": "OpenGeoCity Tanzania",
-        "email": "info@ogctz.org",
-        "phone": "+255 700 000 000",
+        "email": cms_email,
+        "phone": cms_phone,
         "location": "Dodoma, Tanzania",
         "founded": "2021",
+        "footer_about": cms_footer,
         # SEO defaults — can be overridden per-page by providing `page_description` or `page_keywords`
         "site_url": os.environ.get("SITE_URL", "https://opengeocity.org"),
         "default_description": "OpenGeoCity Tanzania — geospatial innovation, urban data and mapping for resilient cities.",
         "default_keywords": "OpenGeoCity, geospatial, GIS, mapping, Tanzania, urban planning, data",
-        "twitter_handle": os.environ.get("TWITTER_HANDLE", "@OpenGeoCityTZ")
-    }   
+        "twitter_handle": os.environ.get("TWITTER_HANDLE", "@OpenGeoCityTZ"),
+        # CMS helpers
+        "cms_content": get_content,
+        "latest_posts": lambda limit=3: published_posts_query(limit=limit).all() if "BlogPost" in globals() else []
+    }
 
 # Main Pages
 @app.route("/")
@@ -264,8 +297,271 @@ def resources():
     youtube_videos = fetch_youtube_videos()
     return render_template("resources.html", page_title="Resources", youtube_videos=youtube_videos)
 
-def gis_course():
-    return render_template("gis_course/gis_course.html", page_title="GIS Fundamentals Guide")
+# ── Public Blog Routes ───────────────────────────────────────────────────────
+
+@app.route("/blog")
+def blog_index():
+    page = request.args.get("page", 1, type=int)
+    per_page = 9
+    posts = BlogPost.query.filter_by(published=True)\
+        .order_by(BlogPost.is_featured.desc(), BlogPost.published_at.desc(), BlogPost.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    return render_template("blog/index.html", page_title="Blog", posts=posts)
+
+
+@app.route("/blog/<slug>")
+def blog_post(slug):
+    post = BlogPost.query.filter_by(slug=slug).first_or_404()
+    if not post.published and not current_user.is_authenticated:
+        return render_template("404.html"), 404
+    related = BlogPost.query.filter(
+        BlogPost.published == True,
+        BlogPost.id != post.id
+    ).order_by(BlogPost.published_at.desc()).limit(3).all()
+    return render_template("blog/post.html", page_title=post.title, post=post, related=related)
+
+
+# ── Admin Authentication ─────────────────────────────────────────────────────
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if current_user.is_authenticated:
+        return redirect(url_for("admin_dashboard"))
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        user = AdminUser.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            login_user(user, remember=True)
+            next_page = request.args.get("next")
+            return redirect(next_page) if next_page else redirect(url_for("admin_dashboard"))
+        flash("Invalid username or password.", "error")
+
+    return render_template("admin/login.html", page_title="Admin Login")
+
+
+@app.route("/admin/logout")
+@login_required
+def admin_logout():
+    logout_user()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("admin_login"))
+
+
+# ── Admin Dashboard ────────────────────────────────────────────────────────────
+
+@app.route("/admin")
+@app.route("/admin/dashboard")
+@login_required
+def admin_dashboard():
+    stats = {
+        "posts": BlogPost.query.count(),
+        "published": BlogPost.query.filter_by(published=True).count(),
+        "images": CMSImage.query.count(),
+        "content": SiteContent.query.count(),
+    }
+    recent_posts = BlogPost.query.order_by(BlogPost.created_at.desc()).limit(5).all()
+    return render_template("admin/dashboard.html", page_title="Admin Dashboard", stats=stats, recent_posts=recent_posts)
+
+
+# ── Admin Blog Posts CRUD ─────────────────────────────────────────────────────
+
+@app.route("/admin/posts")
+@login_required
+def admin_posts():
+    posts = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
+    return render_template("admin/posts.html", page_title="Manage Posts", posts=posts)
+
+
+@app.route("/admin/posts/new", methods=["GET", "POST"])
+@login_required
+def admin_post_new():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        content = request.form.get("content", "").strip()
+        excerpt = request.form.get("excerpt", "").strip()
+        author = request.form.get("author", "").strip()
+        published = bool(request.form.get("published"))
+        featured = bool(request.form.get("featured"))
+        if not title or not content:
+            flash("Title and content are required.", "error")
+            return render_template("admin/post_form.html", page_title="New Post", post=None)
+
+        slug = make_unique_slug(title)
+        post = BlogPost(
+            title=title,
+            slug=slug,
+            content=content,
+            excerpt=excerpt or None,
+            author=author or None,
+            published=published,
+            is_featured=featured,
+            published_at=datetime.utcnow() if published else None
+        )
+
+        if "featured_image" in request.files:
+            filename = save_uploaded_file(request.files["featured_image"], folder="blog")
+            if filename:
+                post.featured_image = f"/static/uploads/blog/{filename}"
+
+        db.session.add(post)
+        db.session.commit()
+        flash("Post created successfully.", "success")
+        return redirect(url_for("admin_posts"))
+
+    return render_template("admin/post_form.html", page_title="New Post", post=None)
+
+
+@app.route("/admin/posts/<int:post_id>/edit", methods=["GET", "POST"])
+@login_required
+def admin_post_edit(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        content = request.form.get("content", "").strip()
+        excerpt = request.form.get("excerpt", "").strip()
+        author = request.form.get("author", "").strip()
+        published = bool(request.form.get("published"))
+        featured = bool(request.form.get("featured"))
+        if not title or not content:
+            flash("Title and content are required.", "error")
+            return render_template("admin/post_form.html", page_title="Edit Post", post=post)
+
+        post.title = title
+        post.slug = make_unique_slug(title, existing_id=post.id)
+        post.content = content
+        post.excerpt = excerpt or None
+        post.author = author or None
+        post.is_featured = featured
+        if published and not post.published:
+            post.published = True
+            post.published_at = datetime.utcnow()
+        else:
+            post.published = published
+
+        if "featured_image" in request.files:
+            filename = save_uploaded_file(request.files["featured_image"], folder="blog")
+            if filename:
+                post.featured_image = f"/static/uploads/blog/{filename}"
+
+        db.session.commit()
+        flash("Post updated successfully.", "success")
+        return redirect(url_for("admin_posts"))
+
+    return render_template("admin/post_form.html", page_title="Edit Post", post=post)
+
+
+@app.route("/admin/posts/<int:post_id>/delete", methods=["POST"])
+@login_required
+def admin_post_delete(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash("Post deleted.", "success")
+    return redirect(url_for("admin_posts"))
+
+
+# ── Admin Image Manager ───────────────────────────────────────────────────────
+
+@app.route("/admin/images")
+@login_required
+def admin_images():
+    folder = request.args.get("folder", "general")
+    images = CMSImage.query.order_by(CMSImage.created_at.desc()).all()
+    return render_template("admin/images.html", page_title="Image Library", images=images, folder=folder)
+
+
+@app.route("/admin/images/upload", methods=["POST"])
+@login_required
+def admin_image_upload():
+    folder = request.form.get("folder", "general").strip()
+    if "file" not in request.files:
+        flash("No file selected.", "error")
+        return redirect(url_for("admin_images", folder=folder))
+    file = request.files["file"]
+    if file.filename == "":
+        flash("No file selected.", "error")
+        return redirect(url_for("admin_images", folder=folder))
+
+    filename = save_uploaded_file(file, folder=folder)
+    if filename:
+        image = CMSImage(
+            filename=filename,
+            original_filename=secure_filename(file.filename),
+            alt_text=request.form.get("alt_text", "").strip() or None,
+            folder=folder,
+            file_size=os.path.getsize(os.path.join(app.root_path, "static", "uploads", folder, filename))
+        )
+        db.session.add(image)
+        db.session.commit()
+        flash("Image uploaded successfully.", "success")
+    else:
+        flash("Invalid file. Allowed types: PNG, JPG, GIF, WEBP, SVG.", "error")
+    return redirect(url_for("admin_images", folder=folder))
+
+
+@app.route("/admin/images/<int:image_id>/delete", methods=["POST"])
+@login_required
+def admin_image_delete(image_id):
+    image = CMSImage.query.get_or_404(image_id)
+    full_path = os.path.join(app.root_path, image.filepath)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+    db.session.delete(image)
+    db.session.commit()
+    flash("Image deleted.", "success")
+    return redirect(url_for("admin_images"))
+
+
+# ── Admin Editable Content Blocks ─────────────────────────────────────────────
+
+@app.route("/admin/content")
+@login_required
+def admin_content():
+    page_filter = request.args.get("page", "all")
+    if page_filter == "all":
+        items = SiteContent.query.order_by(SiteContent.page, SiteContent.key).all()
+    else:
+        items = SiteContent.query.filter_by(page=page_filter).order_by(SiteContent.key).all()
+    pages = [r[0] for r in db.session.query(SiteContent.page).distinct().order_by(SiteContent.page)]
+    return render_template("admin/content.html", page_title="Manage Content", items=items, pages=pages, page_filter=page_filter)
+
+
+@app.route("/admin/content/<int:content_id>/edit", methods=["GET", "POST"])
+@login_required
+def admin_content_edit(content_id):
+    item = SiteContent.query.get_or_404(content_id)
+    if request.method == "POST":
+        item.content = request.form.get("content", "")
+        item.content_type = request.form.get("content_type", "text")
+        db.session.commit()
+        flash("Content block updated.", "success")
+        return redirect(url_for("admin_content", page=item.page))
+    return render_template("admin/content_form.html", page_title="Edit Content", item=item)
+
+
+# ── Admin Setup (one-time) ───────────────────────────────────────────────────
+
+@app.route("/admin/setup", methods=["GET", "POST"])
+def admin_setup():
+    if AdminUser.query.first():
+        flash("Admin user already exists. Please log in.", "warning")
+        return redirect(url_for("admin_login"))
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        email = request.form.get("email", "").strip() or None
+        if not username or not password or len(password) < 6:
+            flash("Username and password (min 6 chars) required.", "error")
+            return render_template("admin/setup.html", page_title="Admin Setup")
+        if create_admin_user(username, password, email):
+            flash("Admin user created. Please log in.", "success")
+            return redirect(url_for("admin_login"))
+        flash("Could not create admin user.", "error")
+
+    return render_template("admin/setup.html", page_title="Admin Setup")
 
 # GIS Course Registration
 
@@ -423,6 +719,12 @@ def logout():
     return redirect(url_for('gis_course'))
 
 
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return render_template("404.html", page_title="Page Not Found"), 404
+
+
 # Sitemap and robots
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():
@@ -435,8 +737,15 @@ def sitemap():
         '/team',
         '/contact',
         '/resources',
-        '/gis-course'
+        '/gis-course',
+        '/blog'
     ]
+    # Include published blog posts
+    try:
+        blog_slugs = [f"/blog/{p.slug}" for p in BlogPost.query.filter_by(published=True).all()]
+        paths.extend(blog_slugs)
+    except Exception:
+        pass
     site_url = os.environ.get("SITE_URL", "https://ogctz.org")
     return render_template('sitemap.xml', paths=paths, site_url=site_url), 200, {'Content-Type': 'application/xml'}
 

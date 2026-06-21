@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-24 bg-white dark:bg-slate-900 text-center">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-6xl mb-6">🗺️</div>
+        <h1 class="text-4xl md:text-5xl font-bold text-brand-dark dark:text-white mb-4">Page Not Found</h1>
+        <p class="text-lg text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
+            We couldn't find that location on the map. It may have moved or no longer exists.
+        </p>
+        <a href="{{ url_for('home') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Back to Home
+        </a>
+    </div>
+</section>
+{% endblock %}

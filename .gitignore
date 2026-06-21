@@ -7,3 +7,14 @@ build/
 .vercel/
 *.log
 .DS_Store
+
+# CMS database & user uploads
+data/
+*.db
+*.sqlite3
+static/uploads/*/*
+!static/uploads/*/.gitkeep
+
+# Python
+__pycache__/
+*.pyc

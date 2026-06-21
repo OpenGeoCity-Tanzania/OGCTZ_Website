@@ -5,4 +5,7 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    volumes:
+      - ./data:/app/data
+      - ./static/uploads:/app/static/uploads
     restart: unless-stopped

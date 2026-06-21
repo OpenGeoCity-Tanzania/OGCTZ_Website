@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ page_title }}</h1>
+    <p class="text-slate-500 dark:text-slate-400 mt-1">{% if post %}Editing {{ post.title }}{% else %}Write a new blog post{% endif %}</p>
+</div>
+
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 lg:p-8">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Title -->
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
+            <input type="text" name="title" required
+                   value="{{ post.title if post else '' }}"
+                   class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+        </div>
+
+        <!-- Author & Excerpt -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Author</label>
+                <input type="text" name="author"
+                       value="{{ post.author if post else '' }}"
+                       class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Excerpt</label>
+                <input type="text" name="excerpt"
+                       value="{{ post.excerpt if post else '' }}"
+                       placeholder="Short summary for cards and SEO"
+                       class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+            </div>
+        </div>
+
+        <!-- Featured Image -->
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Featured Image</label>
+            <div class="flex items-center gap-4">
+                {% if post and post.featured_image %}
+                <img src="{{ post.featured_image }}" alt="Featured" class="h-24 w-24 object-cover rounded-lg border border-slate-200 dark:border-slate-600">
+                {% endif %}
+                <input type="file" name="featured_image" accept="image/*"
+                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-primary file:text-white hover:file:bg-sky-600">
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Recommended: 1200×630 pixels. JPG or PNG.</p>
+        </div>
+
+        <!-- Content -->
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content</label>
+            <textarea name="content" rows="18" required
+                      class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent">{{ post.content if post else '' }}</textarea>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">You can use HTML tags for formatting.</p>
+        </div>
+
+        <!-- Settings -->
+        <div class="flex flex-wrap items-center gap-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+            <label class="flex items-center gap-2">
+                <input type="checkbox" name="published" {% if post and post.published %}checked{% endif %} class="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary">
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Publish post</span>
+            </label>
+            <label class="flex items-center gap-2">
+                <input type="checkbox" name="featured" {% if post and post.is_featured %}checked{% endif %} class="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary">
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Mark as featured</span>
+            </label>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-4 pt-2">
+            <button type="submit" class="px-6 py-2.5 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
+                {% if post %}Update Post{% else %}Create Post{% endif %}
+            </button>
+            <a href="{{ url_for('admin_posts') }}" class="px-6 py-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
