@@ -9,6 +9,7 @@ import time
 import urllib.request
 import json
 from datetime import datetime
+from functools import wraps
 from werkzeug.utils import secure_filename
 from authlib.integrations.flask_client import OAuth
 import random
@@ -321,6 +322,20 @@ def blog_post(slug):
     return render_template("blog/post.html", page_title=post.title, post=post, related=related)
 
 
+# ── Role-based Access Helpers ────────────────────────────────────────────────
+
+def superadmin_required(f):
+    """Decorator restricting a route to superadmin users."""
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_superadmin():
+            flash("You do not have permission to access this page.", "error")
+            return redirect(url_for("admin_dashboard"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # ── Admin Authentication ─────────────────────────────────────────────────────
 
 @app.route("/admin/login", methods=["GET", "POST"])
@@ -541,6 +556,91 @@ def admin_content_edit(content_id):
     return render_template("admin/content_form.html", page_title="Edit Content", item=item)
 
 
+# ── User Management (superadmin only) ───────────────────────────────────────────
+
+@app.route("/admin/users")
+@superadmin_required
+def admin_users():
+    users = AdminUser.query.order_by(AdminUser.created_at.desc()).all()
+    return render_template("admin/users.html", page_title="Manage Users", users=users)
+
+
+@app.route("/admin/users/new", methods=["GET", "POST"])
+@superadmin_required
+def admin_user_new():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        email = request.form.get("email", "").strip() or None
+        role = request.form.get("role", "editor")
+        if not username or not password or len(password) < 6:
+            flash("Username and password (min 6 chars) required.", "error")
+            return render_template("admin/user_form.html", page_title="New User", user=None)
+        if role not in AdminUser.ROLES:
+            role = "editor"
+        if create_admin_user(username, password, email, role=role):
+            flash(f"User '{username}' created with role {role}.", "success")
+            return redirect(url_for("admin_users"))
+        flash("Username or email already exists.", "error")
+    return render_template("admin/user_form.html", page_title="New User", user=None)
+
+
+@app.route("/admin/users/<int:user_id>/edit", methods=["GET", "POST"])
+@superadmin_required
+def admin_user_edit(user_id):
+    user = AdminUser.query.get_or_404(user_id)
+    # Prevent editing/deleting the last superadmin
+    if user.is_superadmin() and AdminUser.query.filter_by(role="superadmin").count() <= 1:
+        is_last_superadmin = True
+    else:
+        is_last_superadmin = False
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip() or None
+        role = request.form.get("role", user.role)
+        is_active = request.form.get("is_active") == "on"
+        new_password = request.form.get("password", "")
+
+        if role not in AdminUser.ROLES:
+            role = user.role
+        if is_last_superadmin and role != "superadmin":
+            flash("Cannot demote the last superadmin.", "error")
+            return render_template("admin/user_form.html", page_title="Edit User", user=user)
+        if is_last_superadmin and not is_active:
+            flash("Cannot deactivate the last superadmin.", "error")
+            return render_template("admin/user_form.html", page_title="Edit User", user=user)
+
+        user.email = email
+        user.role = role
+        user.is_active = is_active
+        if new_password:
+            if len(new_password) < 6:
+                flash("Password must be at least 6 characters.", "error")
+                return render_template("admin/user_form.html", page_title="Edit User", user=user)
+            user.set_password(new_password)
+        db.session.commit()
+        flash("User updated.", "success")
+        return redirect(url_for("admin_users"))
+
+    return render_template("admin/user_form.html", page_title="Edit User", user=user)
+
+
+@app.route("/admin/users/<int:user_id>/delete", methods=["POST"])
+@superadmin_required
+def admin_user_delete(user_id):
+    user = AdminUser.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash("You cannot delete your own account.", "error")
+        return redirect(url_for("admin_users"))
+    if user.is_superadmin() and AdminUser.query.filter_by(role="superadmin").count() <= 1:
+        flash("Cannot delete the last superadmin.", "error")
+        return redirect(url_for("admin_users"))
+    db.session.delete(user)
+    db.session.commit()
+    flash("User deleted.", "success")
+    return redirect(url_for("admin_users"))
+
+
 # ── Admin Setup (one-time) ───────────────────────────────────────────────────
 
 @app.route("/admin/setup", methods=["GET", "POST"])
@@ -556,8 +656,8 @@ def admin_setup():
         if not username or not password or len(password) < 6:
             flash("Username and password (min 6 chars) required.", "error")
             return render_template("admin/setup.html", page_title="Admin Setup")
-        if create_admin_user(username, password, email):
-            flash("Admin user created. Please log in.", "success")
+        if create_admin_user(username, password, email, role="superadmin"):
+            flash("Superadmin account created. Please log in.", "success")
             return redirect(url_for("admin_login"))
         flash("Could not create admin user.", "error")
 

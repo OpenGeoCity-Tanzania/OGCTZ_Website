@@ -23,14 +23,29 @@ class AdminUser(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=True)
     password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.String(20), default="editor", nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    ROLES = ["superadmin", "admin", "editor"]
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def is_superadmin(self):
+        return self.role == "superadmin" and self.is_active
+
+    def is_admin(self):
+        return self.role in ("superadmin", "admin") and self.is_active
+
+    def can_manage_users(self):
+        return self.is_superadmin()
+
+    def can_manage_content(self):
+        return self.role in ("superadmin", "admin", "editor") and self.is_active
 
 
 class BlogPost(db.Model):
@@ -165,11 +180,12 @@ def get_content(key, page="global", default=""):
     return item.content if item else default
 
 
-def create_admin_user(username, password, email=None):
-    """Create initial admin user (run once from CLI)."""
+def create_admin_user(username, password, email=None, role="editor"):
+    """Create an admin user. Defaults to editor; first setup should be superadmin."""
     if AdminUser.query.filter_by(username=username).first():
         return False
-    user = AdminUser(username=username, email=email)
+    role = role if role in AdminUser.ROLES else "editor"
+    user = AdminUser(username=username, email=email, role=role)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -188,6 +204,23 @@ def init_cms(app):
         db.create_all()
         # Ensure common editable content blocks exist
         seed_content_blocks()
+        # Backfill roles and ensure one superadmin exists
+        _ensure_superadmin()
+
+
+def _ensure_superadmin():
+    """Backfill missing roles and promote the first user to superadmin if none exists."""
+    users = AdminUser.query.all()
+    if not users:
+        return
+    # Backfill any NULL roles to editor
+    for user in users:
+        if not user.role or user.role not in AdminUser.ROLES:
+            user.role = "editor"
+    if not any(u.role == "superadmin" for u in users):
+        first = min(users, key=lambda u: u.created_at or datetime.utcnow())
+        first.role = "superadmin"
+    db.session.commit()
 
 
 def seed_content_blocks():

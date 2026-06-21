@@ -30,6 +30,17 @@ Available sections:
 - **Blog Posts** — Create, edit, publish, unpublish, and delete articles.
 - **Images** — Upload images and copy their URLs for use in posts or pages.
 - **Site Content** — Edit text/HTML content blocks for specific pages.
+- **Manage Users** *(superadmin only)* — Create, edit, and delete other admin users.
+
+## Roles
+
+There are three built-in roles:
+
+- **Superadmin** — Full access; can manage users, content, posts, and images.
+- **Admin** — Can manage blog posts, images, and site content.
+- **Editor** — Can manage blog posts, images, and site content.
+
+The first account created via `/admin/setup` becomes a **superadmin**. Only superadmins can add or remove other admin users.
 
 ## Public Blog
 
