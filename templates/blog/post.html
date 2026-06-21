@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
+{% block meta %}
+<meta name="description" content="{{ post.meta_description or post.excerpt or (post.content | striptags | truncate(160)) }}">
+<meta property="og:title" content="{{ post.meta_title or post.title }}">
+<meta property="og:description" content="{{ post.meta_description or post.excerpt or (post.content | striptags | truncate(160)) }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ site_url }}{{ url_for('blog_post', slug=post.slug) }}">
+{% if post.featured_image %}<meta property="og:image" content="{{ site_url }}{{ post.featured_image }}">{% endif %}
+{% for tag in post.tag_list %}<meta property="article:tag" content="{{ tag }}">{% endfor %}
+{% endblock %}
+
 {% block content %}
 <!-- Article Header -->
 <section class="py-20 bg-brand-dark overflow-hidden relative">
@@ -31,6 +41,15 @@
         <div class="prose prose-lg dark:prose-invert prose-headings:text-brand-dark dark:prose-headings:text-white prose-a:text-brand-primary max-w-none">
             {{ post.content | safe }}
         </div>
+
+        {% if post.tag_list %}
+        <div class="mt-8 flex flex-wrap items-center gap-2">
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Tags:</span>
+            {% for tag in post.tag_list %}
+            <a href="{{ url_for('blog_tag', tag=tag) }}" class="text-sm px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white transition">{{ tag }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <!-- Share / Back -->
         <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">

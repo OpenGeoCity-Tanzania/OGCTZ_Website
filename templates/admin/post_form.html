@@ -11,18 +11,39 @@
         <!-- Title -->
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
-            <input type="text" name="title" required
+            <input type="text" name="title" id="post-title" required
                    value="{{ post.title if post else '' }}"
                    class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
         </div>
 
-        <!-- Author & Excerpt -->
-        <div class="grid md:grid-cols-2 gap-6">
+        <!-- Slug -->
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL Slug</label>
+            <div class="flex items-center">
+                <span class="px-3 py-2.5 bg-slate-100 dark:bg-slate-700 border border-r-0 border-slate-300 dark:border-slate-600 rounded-l-lg text-slate-500 dark:text-slate-400 text-sm">/blog/</span>
+                <input type="text" name="slug" id="post-slug"
+                       value="{{ post.slug if post else '' }}"
+                       placeholder="auto-generated-from-title"
+                       class="flex-1 px-4 py-2.5 rounded-r-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave blank to auto-generate from title.</p>
+        </div>
+
+        <!-- Author, Tags, Excerpt -->
+        <div class="grid md:grid-cols-3 gap-6">
             <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Author</label>
                 <input type="text" name="author"
                        value="{{ post.author if post else '' }}"
                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tags</label>
+                <input type="text" name="tags"
+                       value="{{ post.tags if post else '' }}"
+                       placeholder="GIS, Mapping, Tanzania"
+                       class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comma-separated.</p>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Excerpt</label>
@@ -49,21 +70,54 @@
         <!-- Content -->
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content</label>
-            <textarea name="content" rows="18" required
-                      class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent">{{ post.content if post else '' }}</textarea>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">You can use HTML tags for formatting.</p>
+            <textarea name="content" id="post-content" rows="18" required
+                      class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent">{{ post.content if post else '' }}</textarea>
         </div>
 
-        <!-- Settings -->
-        <div class="flex flex-wrap items-center gap-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-            <label class="flex items-center gap-2">
-                <input type="checkbox" name="published" {% if post and post.published %}checked{% endif %} class="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary">
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Publish post</span>
-            </label>
-            <label class="flex items-center gap-2">
-                <input type="checkbox" name="featured" {% if post and post.is_featured %}checked{% endif %} class="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary">
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Mark as featured</span>
-            </label>
+        <!-- SEO Meta -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg space-y-4">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">SEO Settings</h3>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Meta Title</label>
+                <input type="text" name="meta_title" maxlength="200"
+                       value="{{ post.meta_title if post else '' }}"
+                       placeholder="Fallback to post title"
+                       class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Meta Description</label>
+                <textarea name="meta_description" rows="3"
+                          placeholder="Fallback to excerpt"
+                          class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent">{{ post.meta_description if post else '' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Publish Settings -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg space-y-4">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Publish Settings</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
+                    <select name="status" id="post-status"
+                            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+                        <option value="draft" {% if post and post.status == 'draft' %}selected{% endif %}>Draft</option>
+                        <option value="published" {% if post and post.status == 'published' %}selected{% endif %}>Published</option>
+                        <option value="scheduled" {% if post and post.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                    </select>
+                </div>
+                <div id="schedule-field" class="{% if not post or post.status != 'scheduled' %}hidden{% endif %}">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Schedule (UTC)</label>
+                    <input type="datetime-local" name="scheduled_at"
+                           value="{{ post.scheduled_at.strftime('%Y-%m-%dT%H:%M') if post and post.scheduled_at else '' }}"
+                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+                </div>
+                <div class="flex items-center">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" name="featured" {% if post and post.is_featured %}checked{% endif %} class="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary">
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Mark as featured</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <!-- Actions -->
@@ -71,8 +125,63 @@
             <button type="submit" class="px-6 py-2.5 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
                 {% if post %}Update Post{% else %}Create Post{% endif %}
             </button>
+            {% if post %}
+            <a href="{{ url_for('blog_post', slug=post.slug) }}" target="_blank" class="px-6 py-2.5 text-brand-primary hover:text-sky-600 font-medium transition">Preview</a>
+            {% endif %}
             <a href="{{ url_for('admin_posts') }}" class="px-6 py-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">Cancel</a>
         </div>
     </form>
 </div>
 {% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+            selector: '#post-content',
+            plugins: 'link image lists code preview',
+            toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | code preview',
+            menubar: false,
+            height: 500,
+            branding: false,
+            promotion: false,
+            skin: document.documentElement.classList.contains('dark') ? 'oxide-dark' : 'oxide',
+            content_css: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+            images_upload_url: false,
+            relative_urls: false,
+            remove_script_host: false,
+            convert_urls: true,
+            setup: function(editor) {
+                editor.on('change', function() {
+                    editor.save();
+                });
+            }
+        });
+
+        // Auto-generate slug from title
+        const titleInput = document.getElementById('post-title');
+        const slugInput = document.getElementById('post-slug');
+        titleInput.addEventListener('blur', function() {
+            if (!slugInput.value && titleInput.value) {
+                slugInput.value = titleInput.value.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .trim()
+                    .replace(/[\s-]+/g, '-')
+                    .substring(0, 200);
+            }
+        });
+
+        // Show/hide schedule field
+        const statusSelect = document.getElementById('post-status');
+        const scheduleField = document.getElementById('schedule-field');
+        statusSelect.addEventListener('change', function() {
+            scheduleField.classList.toggle('hidden', statusSelect.value !== 'scheduled');
+        });
+    });
+</script>
+{% endblock %}
+

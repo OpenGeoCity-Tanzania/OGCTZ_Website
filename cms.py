@@ -57,11 +57,16 @@ class BlogPost(db.Model):
     content = db.Column(db.Text, nullable=False)
     featured_image = db.Column(db.String(300), nullable=True)
     author = db.Column(db.String(100), nullable=True)
+    tags = db.Column(db.String(300), nullable=True)  # comma-separated tags
+    meta_title = db.Column(db.String(200), nullable=True)
+    meta_description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), default="draft")  # draft, published, scheduled
     published = db.Column(db.Boolean, default=False)
     is_featured = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     published_at = db.Column(db.DateTime, nullable=True)
+    scheduled_at = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f"<BlogPost {self.slug}>"
@@ -71,6 +76,21 @@ class BlogPost(db.Model):
         """Estimate reading time in minutes (200 words/min)."""
         words = len(re.findall(r"\w+", self.content or ""))
         return max(1, round(words / 200))
+
+    @property
+    def tag_list(self):
+        """Return list of normalized tags."""
+        if not self.tags:
+            return []
+        return [t.strip() for t in self.tags.split(",") if t.strip()]
+
+    def is_visible(self):
+        """A post is publicly visible when published and (not scheduled or schedule reached)."""
+        if not self.published or self.status != "published":
+            return False
+        if self.scheduled_at and self.scheduled_at > datetime.utcnow():
+            return False
+        return True
 
 
 class CMSImage(db.Model):
@@ -119,6 +139,16 @@ def load_user(user_id):
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "svg"}
+
+
+def parse_scheduled_datetime(value):
+    """Parse a datetime-local string (YYYY-MM-DDTHH:MM) to datetime or None."""
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M")
+    except ValueError:
+        return None
 
 
 def allowed_file(filename):

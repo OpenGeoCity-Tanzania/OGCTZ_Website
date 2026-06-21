@@ -17,8 +17,8 @@ import random
 # ── Content Management System ─────────────────────────────────────────────────
 from cms import (
     init_cms, db, AdminUser, BlogPost, CMSImage, SiteContent,
-    save_uploaded_file, make_unique_slug, allowed_file, get_or_create_content,
-    get_content, published_posts_query, create_admin_user
+    save_uploaded_file, make_unique_slug, slugify, allowed_file, get_or_create_content,
+    get_content, published_posts_query, create_admin_user, parse_scheduled_datetime
 )
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -300,11 +300,24 @@ def resources():
 
 # ── Public Blog Routes ───────────────────────────────────────────────────────
 
+def _visible_posts_query():
+    """Query posts that are publicly visible (published and schedule reached)."""
+    now = datetime.utcnow()
+    return BlogPost.query.filter(
+        BlogPost.published == True,
+        BlogPost.status == "published",
+        db.or_(
+            BlogPost.scheduled_at == None,
+            BlogPost.scheduled_at <= now
+        )
+    )
+
+
 @app.route("/blog")
 def blog_index():
     page = request.args.get("page", 1, type=int)
     per_page = 9
-    posts = BlogPost.query.filter_by(published=True)\
+    posts = _visible_posts_query()\
         .order_by(BlogPost.is_featured.desc(), BlogPost.published_at.desc(), BlogPost.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
     return render_template("blog/index.html", page_title="Blog", posts=posts)
@@ -313,13 +326,32 @@ def blog_index():
 @app.route("/blog/<slug>")
 def blog_post(slug):
     post = BlogPost.query.filter_by(slug=slug).first_or_404()
-    if not post.published and not current_user.is_authenticated:
+    if not post.is_visible() and not (current_user.is_authenticated and current_user.can_manage_content()):
         return render_template("404.html"), 404
-    related = BlogPost.query.filter(
-        BlogPost.published == True,
-        BlogPost.id != post.id
-    ).order_by(BlogPost.published_at.desc()).limit(3).all()
-    return render_template("blog/post.html", page_title=post.title, post=post, related=related)
+    related = _visible_posts_query().filter(BlogPost.id != post.id)\
+        .order_by(BlogPost.published_at.desc()).limit(3).all()
+    page_description = post.meta_description or post.excerpt or ""
+    return render_template("blog/post.html", page_title=post.meta_title or post.title, page_description=page_description, post=post, related=related)
+
+
+@app.route("/blog/tag/<tag>")
+def blog_tag(tag):
+    """Filter posts by tag."""
+    page = request.args.get("page", 1, type=int)
+    per_page = 9
+    posts = _visible_posts_query().filter(BlogPost.tags.contains(tag))\
+        .order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    return render_template("blog/index.html", page_title=f"Posts tagged \"{tag}\"", posts=posts, tag=tag)
+
+
+@app.route("/blog/rss.xml")
+def blog_rss():
+    """RSS feed of published posts."""
+    site_url = os.environ.get("SITE_URL", "https://ogctz.org")
+    posts = _visible_posts_query().order_by(BlogPost.published_at.desc()).limit(20).all()
+    rss = render_template("blog/rss.xml", posts=posts, site_url=site_url, now=datetime.utcnow())
+    return Response(rss, mimetype="application/rss+xml")
 
 
 # ── Role-based Access Helpers ────────────────────────────────────────────────
@@ -382,6 +414,71 @@ def admin_dashboard():
 
 # ── Admin Blog Posts CRUD ─────────────────────────────────────────────────────
 
+def _apply_post_form(post, form, is_new=False):
+    """Populate a BlogPost from form data and return a tuple (success, error_message)."""
+    title = form.get("title", "").strip()
+    content = form.get("content", "").strip()
+    slug = form.get("slug", "").strip()
+    excerpt = form.get("excerpt", "").strip()
+    author = form.get("author", "").strip()
+    tags = form.get("tags", "").strip()
+    meta_title = form.get("meta_title", "").strip()
+    meta_description = form.get("meta_description", "").strip()
+    status = form.get("status", "draft")
+    featured = bool(form.get("featured"))
+    scheduled_at = parse_scheduled_datetime(form.get("scheduled_at", "").strip())
+
+    if not title or not content:
+        return False, "Title and content are required."
+    if status not in ("draft", "published", "scheduled"):
+        status = "draft"
+
+    # Determine slug
+    if not slug:
+        slug = make_unique_slug(title, existing_id=None if is_new else post.id)
+    else:
+        slug = slugify(slug)
+        if is_new:
+            slug = make_unique_slug(slug)
+        else:
+            existing = BlogPost.query.filter(BlogPost.slug == slug, BlogPost.id != post.id).first()
+            if existing:
+                slug = make_unique_slug(slug, existing_id=post.id)
+
+    post.title = title
+    post.slug = slug
+    post.content = content
+    post.excerpt = excerpt or None
+    post.author = author or None
+    post.tags = tags or None
+    post.meta_title = meta_title or None
+    post.meta_description = meta_description or None
+    post.is_featured = featured
+    post.scheduled_at = scheduled_at
+
+    # Handle status transitions
+    was_published = post.published
+    post.status = status
+    if status == "published":
+        post.published = True
+        if not was_published or not post.published_at:
+            post.published_at = datetime.utcnow()
+    elif status == "scheduled":
+        post.published = True
+        if not post.published_at:
+            post.published_at = datetime.utcnow()
+    else:  # draft
+        post.published = False
+
+    # Featured image upload
+    if "featured_image" in request.files:
+        filename = save_uploaded_file(request.files["featured_image"], folder="blog")
+        if filename:
+            post.featured_image = f"/static/uploads/blog/{filename}"
+
+    return True, None
+
+
 @app.route("/admin/posts")
 @login_required
 def admin_posts():
@@ -393,33 +490,11 @@ def admin_posts():
 @login_required
 def admin_post_new():
     if request.method == "POST":
-        title = request.form.get("title", "").strip()
-        content = request.form.get("content", "").strip()
-        excerpt = request.form.get("excerpt", "").strip()
-        author = request.form.get("author", "").strip()
-        published = bool(request.form.get("published"))
-        featured = bool(request.form.get("featured"))
-        if not title or not content:
-            flash("Title and content are required.", "error")
+        post = BlogPost()
+        ok, err = _apply_post_form(post, request.form, is_new=True)
+        if not ok:
+            flash(err, "error")
             return render_template("admin/post_form.html", page_title="New Post", post=None)
-
-        slug = make_unique_slug(title)
-        post = BlogPost(
-            title=title,
-            slug=slug,
-            content=content,
-            excerpt=excerpt or None,
-            author=author or None,
-            published=published,
-            is_featured=featured,
-            published_at=datetime.utcnow() if published else None
-        )
-
-        if "featured_image" in request.files:
-            filename = save_uploaded_file(request.files["featured_image"], folder="blog")
-            if filename:
-                post.featured_image = f"/static/uploads/blog/{filename}"
-
         db.session.add(post)
         db.session.commit()
         flash("Post created successfully.", "success")
@@ -433,33 +508,10 @@ def admin_post_new():
 def admin_post_edit(post_id):
     post = BlogPost.query.get_or_404(post_id)
     if request.method == "POST":
-        title = request.form.get("title", "").strip()
-        content = request.form.get("content", "").strip()
-        excerpt = request.form.get("excerpt", "").strip()
-        author = request.form.get("author", "").strip()
-        published = bool(request.form.get("published"))
-        featured = bool(request.form.get("featured"))
-        if not title or not content:
-            flash("Title and content are required.", "error")
+        ok, err = _apply_post_form(post, request.form, is_new=False)
+        if not ok:
+            flash(err, "error")
             return render_template("admin/post_form.html", page_title="Edit Post", post=post)
-
-        post.title = title
-        post.slug = make_unique_slug(title, existing_id=post.id)
-        post.content = content
-        post.excerpt = excerpt or None
-        post.author = author or None
-        post.is_featured = featured
-        if published and not post.published:
-            post.published = True
-            post.published_at = datetime.utcnow()
-        else:
-            post.published = published
-
-        if "featured_image" in request.files:
-            filename = save_uploaded_file(request.files["featured_image"], folder="blog")
-            if filename:
-                post.featured_image = f"/static/uploads/blog/{filename}"
-
         db.session.commit()
         flash("Post updated successfully.", "success")
         return redirect(url_for("admin_posts"))

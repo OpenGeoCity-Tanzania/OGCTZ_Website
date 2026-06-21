@@ -46,6 +46,18 @@ The first account created via `/admin/setup` becomes a **superadmin**. Only supe
 
 Published blog posts are visible at `/blog`. The navigation menu and footer both link to the blog automatically.
 
+Blog features inspired by leading platforms:
+
+- **Rich text editor** — TinyMCE-based WYSIWYG editor for formatting, links, lists, images, and code.
+- **Editable URL slug** — Control the post URL (`/blog/your-slug`). Auto-generated from the title if left blank.
+- **SEO meta fields** — Set custom `<meta name="description">`, OpenGraph title, and description per post.
+- **Tags** — Assign comma-separated tags to posts. Public tag pages at `/blog/tag/<tag>`.
+- **Featured posts** — Mark posts as featured to highlight them at the top of the listing.
+- **Publishing status** — Draft, Published, or Scheduled. Scheduled posts go live automatically at the chosen UTC time.
+- **RSS feed** — `/blog/rss.xml` syndicates the latest 20 published posts.
+- **Social sharing** — Twitter and LinkedIn share buttons on every post.
+- **Related posts** — Automatically shows related published posts at the bottom of an article.
+
 ## Page Content Blocks
 
 The following content keys are available by default in the admin panel:

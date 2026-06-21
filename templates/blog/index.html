@@ -14,6 +14,12 @@
 <!-- Posts Grid -->
 <section class="py-20 bg-slate-50/95 dark:bg-slate-900/90">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-end mb-6">
+            <a href="{{ url_for('blog_rss') }}" class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-brand-primary transition">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6.503 20.752c0 1.494-1.199 2.748-2.748 2.748-1.494 0-2.748-1.199-2.748-2.748 0-1.494 1.199-2.748 2.748-2.748 1.494 0 2.748 1.199 2.748 2.748zm-5.497-11.502c0 1.155-.1 1.917-.1 1.917s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2s.1 1.1.1 2.2c0 1.155-.1 2.2-.1 2.2s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2h3.3c0-6.6 5.346-11.946 11.946-11.946v-3.3c-8.433 0-15.246 6.813-15.246 15.246zm6.6 0c0 1.155-.1 1.917-.1 1.917s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2s.1 1.1.1 2.2c0 1.155-.1 2.2-.1 2.2s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2h3.3c0-3.685 2.962-6.647 6.647-6.647v-3.3c-5.5 0-9.947 4.447-9.947 9.947z"/></svg>
+                RSS Feed
+            </a>
+        </div>
         {% if posts.items %}
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for post in posts.items %}
@@ -39,6 +45,13 @@
                     <p class="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 flex-1">
                         {{ post.excerpt or (post.content | striptags | truncate(160)) }}
                     </p>
+                    {% if post.tag_list %}
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        {% for tag in post.tag_list %}
+                        <a href="{{ url_for('blog_tag', tag=tag) }}" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white transition">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     {% if post.author %}
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-auto">By {{ post.author }}</div>
                     {% endif %}
