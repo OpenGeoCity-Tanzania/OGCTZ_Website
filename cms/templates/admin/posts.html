@@ -6,7 +6,7 @@
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Blog Posts</h1>
         <p class="text-slate-500 dark:text-slate-400 mt-1">Create, edit, and publish articles.</p>
     </div>
-    <a href="{{ url_for('admin_post_new') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
+    <a href="{{ url_for('admin.admin_post_new') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         New Post
     </a>
@@ -50,11 +50,11 @@
                     <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ post.created_at.strftime('%b %d, %Y') }}</td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex items-center justify-end gap-3">
-                            <a href="{{ url_for('blog_post', slug=post.slug) }}" target="_blank" class="text-slate-500 hover:text-brand-primary transition" title="Preview">
+                            <a href="{{ url_for('blog.blog_post', slug=post.slug) }}" target="_blank" class="text-slate-500 hover:text-brand-primary transition" title="Preview">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             </a>
-                            <a href="{{ url_for('admin_post_edit', post_id=post.id) }}" class="text-brand-primary hover:text-sky-600 font-medium">Edit</a>
-                            <form action="{{ url_for('admin_post_delete', post_id=post.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this post?')">
+                            <a href="{{ url_for('admin.admin_post_edit', post_id=post.id) }}" class="text-brand-primary hover:text-sky-600 font-medium">Edit</a>
+                            <form action="{{ url_for('admin.admin_post_delete', post_id=post.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this post?')">
                                 <button type="submit" class="text-red-500 hover:text-red-600 font-medium">Delete</button>
                             </form>
                         </div>
@@ -63,7 +63,7 @@
                 {% else %}
                 <tr>
                     <td colspan="6" class="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
-                        No posts yet. <a href="{{ url_for('admin_post_new') }}" class="text-brand-primary hover:underline">Create your first post</a>.
+                        No posts yet. <a href="{{ url_for('admin.admin_post_new') }}" class="text-brand-primary hover:underline">Create your first post</a>.
                     </td>
                 </tr>
                 {% endfor %}

@@ -7,3 +7,4 @@ authlib
 requests
 python-dotenv
 gunicorn
+PyMySQL==1.1.1

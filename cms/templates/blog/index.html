@@ -10,7 +10,7 @@
         <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-8">Geospatial stories, project updates, tutorials, and perspectives from Tanzania.</p>
 
         <!-- Search -->
-        <form method="GET" action="{{ url_for('blog_search') }}" class="max-w-2xl mx-auto">
+        <form method="GET" action="{{ url_for('blog.blog_search') }}" class="max-w-2xl mx-auto">
             <div class="flex items-center bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg">
                 <input type="text" name="q" placeholder="Search articles, topics, authors..."
                        class="flex-1 px-6 py-3 bg-transparent text-slate-900 dark:text-white focus:outline-none">
@@ -33,11 +33,11 @@
                 {% if all_categories %}
                 <div class="hidden md:flex items-center gap-2">
                     {% for cat in all_categories %}
-                    <a href="{{ url_for('blog_category', slug=cat.slug) }}" class="text-sm px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition">{{ cat.name }}</a>
+                    <a href="{{ url_for('blog.blog_category', slug=cat.slug) }}" class="text-sm px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition">{{ cat.name }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
-                <a href="{{ url_for('blog_rss') }}" class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-brand-primary transition">
+                <a href="{{ url_for('blog.blog_rss') }}" class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-brand-primary transition">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6.503 20.752c0 1.494-1.199 2.748-2.748 2.748-1.494 0-2.748-1.199-2.748-2.748 0-1.494 1.199-2.748 2.748-2.748 1.494 0 2.748 1.199 2.748 2.748zm-5.497-11.502c0 1.155-.1 1.917-.1 1.917s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2s.1 1.1-.1 2.2c0 1.155-.1 2.2-.1 2.2s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2h3.3c0-6.6 5.346-11.946 11.946-11.946v-3.3c-8.433 0-15.246 6.813-15.246 15.246zm6.6 0c0 1.155-.1 1.917-.1 1.917s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2s.1 1.1-.1 2.2c0 1.155-.1 2.2-.1 2.2s-.1 1.1-.1 2.2c0 1.155.1 2.2.1 2.2h3.3c0-3.685 2.962-6.647 6.647-6.647v-3.3c-5.5 0-9.947 4.447-9.947 9.947z"/></svg>
                     RSS
                 </a>
@@ -48,7 +48,7 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for post in posts.items %}
             <article class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
-                <a href="{{ url_for('blog_post', slug=post.slug) }}" class="block h-52 overflow-hidden">
+                <a href="{{ url_for('blog.blog_post', slug=post.slug) }}" class="block h-52 overflow-hidden">
                     {% if post.featured_image %}
                     <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     {% else %}
@@ -59,13 +59,13 @@
                 </a>
                 <div class="p-6 flex flex-col flex-1">
                     <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-3">
-                        {% if post.category %}<a href="{{ url_for('blog_category', slug=post.category.slug) }}" class="text-brand-primary hover:underline">{{ post.category.name }}</a> ·{% endif %}
+                        {% if post.category %}<a href="{{ url_for('blog.blog_category', slug=post.category.slug) }}" class="text-brand-primary hover:underline">{{ post.category.name }}</a> ·{% endif %}
                         <span>{{ post.published_at.strftime('%b %d, %Y') if post.published_at else post.created_at.strftime('%b %d, %Y') }}</span>
                         {% if post.is_featured %}<span class="text-brand-primary font-semibold">★ Featured</span>{% endif %}
                         <span class="ml-auto">{{ post.read_time }} min read</span>
                     </div>
                     <h2 class="text-xl font-bold text-brand-dark dark:text-white mb-2 hover:text-brand-primary transition-colors">
-                        <a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a>
+                        <a href="{{ url_for('blog.blog_post', slug=post.slug) }}">{{ post.title }}</a>
                     </h2>
                     <p class="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 flex-1">
                         {{ post.excerpt or (post.content | striptags | truncate(160)) }}
@@ -73,7 +73,7 @@
                     {% if post.tag_list %}
                     <div class="flex flex-wrap gap-2 mb-3">
                         {% for tag in post.tag_list %}
-                        <a href="{{ url_for('blog_tag', tag=tag) }}" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white transition">{{ tag }}</a>
+                        <a href="{{ url_for('blog.blog_tag', tag=tag) }}" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-primary hover:text-white transition">{{ tag }}</a>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -89,11 +89,11 @@
         {% if posts.has_prev or posts.has_next %}
         <div class="flex items-center justify-center gap-3 mt-12">
             {% if posts.has_prev %}
-            <a href="{{ url_for('blog_index', page=posts.prev_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">← Previous</a>
+            <a href="{{ url_for('blog.blog_index', page=posts.prev_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">← Previous</a>
             {% endif %}
             <span class="text-sm text-slate-500 dark:text-slate-400">Page {{ posts.page }} of {{ posts.pages }}</span>
             {% if posts.has_next %}
-            <a href="{{ url_for('blog_index', page=posts.next_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">Next →</a>
+            <a href="{{ url_for('blog.blog_index', page=posts.next_num) }}" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-brand-primary hover:text-brand-primary transition">Next →</a>
             {% endif %}
         </div>
         {% endif %}
@@ -112,7 +112,7 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-brand-dark dark:text-white mb-3">Subscribe to our newsletter</h2>
         <p class="text-slate-600 dark:text-slate-300 mb-8">Get the latest geospatial stories, project updates, and tutorials delivered to your inbox.</p>
-        <form method="POST" action="{{ url_for('blog_subscribe') }}" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+        <form method="POST" action="{{ url_for('blog.blog_subscribe') }}" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
             <input type="text" name="name" placeholder="Your name (optional)"
                    class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-primary focus:border-transparent">
             <input type="email" name="email" placeholder="Email address" required

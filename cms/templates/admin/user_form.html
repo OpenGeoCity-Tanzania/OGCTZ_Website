@@ -61,7 +61,7 @@
             <button type="submit" class="px-6 py-2.5 bg-brand-primary hover:bg-sky-600 text-white font-semibold rounded-lg transition shadow">
                 {% if user %}Update User{% else %}Create User{% endif %}
             </button>
-            <a href="{{ url_for('admin_users') }}" class="px-6 py-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">Cancel</a>
+            <a href="{{ url_for('admin.admin_users') }}" class="px-6 py-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">Cancel</a>
         </div>
     </form>
 </div>

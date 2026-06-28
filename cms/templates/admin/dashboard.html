@@ -30,7 +30,7 @@
     <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
             <h2 class="font-bold text-lg text-slate-900 dark:text-white">Recent Posts</h2>
-            <a href="{{ url_for('admin_post_new') }}" class="text-sm font-medium text-brand-primary hover:underline">+ New Post</a>
+            <a href="{{ url_for('admin.admin_post_new') }}" class="text-sm font-medium text-brand-primary hover:underline">+ New Post</a>
         </div>
         <div class="divide-y divide-slate-200 dark:divide-slate-700">
             {% for post in recent_posts %}
@@ -42,11 +42,11 @@
                         {% if post.published %}<span class="text-green-500">Published</span>{% else %}<span class="text-amber-500">Draft</span>{% endif %}
                     </div>
                 </div>
-                <a href="{{ url_for('admin_post_edit', post_id=post.id) }}" class="text-sm text-brand-primary hover:underline">Edit</a>
+                <a href="{{ url_for('admin.admin_post_edit', post_id=post.id) }}" class="text-sm text-brand-primary hover:underline">Edit</a>
             </div>
             {% else %}
             <div class="px-6 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
-                No posts yet. <a href="{{ url_for('admin_post_new') }}" class="text-brand-primary hover:underline">Create one</a>.
+                No posts yet. <a href="{{ url_for('admin.admin_post_new') }}" class="text-brand-primary hover:underline">Create one</a>.
             </div>
             {% endfor %}
         </div>
@@ -58,15 +58,15 @@
             <h2 class="font-bold text-lg text-slate-900 dark:text-white">Quick Actions</h2>
         </div>
         <div class="p-6 space-y-3">
-            <a href="{{ url_for('admin_post_new') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
+            <a href="{{ url_for('admin.admin_post_new') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
                 <span class="font-medium">Write a blog post</span>
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             </a>
-            <a href="{{ url_for('admin_images') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
+            <a href="{{ url_for('admin.admin_images') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
                 <span class="font-medium">Upload an image</span>
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             </a>
-            <a href="{{ url_for('admin_content') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
+            <a href="{{ url_for('admin.admin_content') }}" class="flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-brand-primary hover:text-brand-primary transition">
                 <span class="font-medium">Edit page content</span>
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </a>

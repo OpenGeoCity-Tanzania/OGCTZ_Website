@@ -10,7 +10,7 @@
 
 <!-- Upload Form -->
 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 mb-8">
-    <form method="POST" action="{{ url_for('admin_image_upload') }}" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
+    <form method="POST" action="{{ url_for('admin.admin_image_upload') }}" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
         <div class="flex-1 min-w-[200px]">
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Image</label>
             <input type="file" name="file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml" required
@@ -51,7 +51,7 @@
             <!-- Overlay Actions -->
             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
                 <button type="button" onclick="copyUrl('{{ img.url }}')" class="bg-white text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-100">Copy URL</button>
-                <form action="{{ url_for('admin_image_delete', image_id=img.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this image?')">
+                <form action="{{ url_for('admin.admin_image_delete', image_id=img.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this image?')">
                     <button type="submit" class="bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600">Delete</button>
                 </form>
             </div>

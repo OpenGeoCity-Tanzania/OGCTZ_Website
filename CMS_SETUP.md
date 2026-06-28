@@ -9,10 +9,37 @@ Add these to your `.env` file if they are not already present:
 ```env
 SECRET_KEY=your-very-long-random-secret-key
 DATABASE_URL=sqlite:///data/opengeocity.db
-# Or use any PostgreSQL/MySQL URI supported by SQLAlchemy
+# Or use any PostgreSQL/MySQL/MariaDB URI supported by SQLAlchemy
 ```
 
 `SECRET_KEY` is required for secure sessions and login.
+
+### MariaDB / MySQL
+
+For a remote MariaDB database, set `DATABASE_URL` in `.env`:
+
+```env
+DATABASE_URL=mariadb+pymysql://username:password@host:3306/database_name
+```
+
+The app also accepts shorthand URLs and automatically adds the PyMySQL driver:
+
+```env
+DATABASE_URL=mariadb://shabani:1234@13.140.132.137:3306/ogctzdb
+```
+
+Before starting the app, the database must exist and the user must have privileges. Run this as a privileged MariaDB user (e.g., root):
+
+```sql
+CREATE DATABASE IF NOT EXISTS ogctzdb
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON ogctzdb.* TO 'shabani'@'%';
+FLUSH PRIVILEGES;
+```
+
+Then restart the app. Tables will be created automatically on first run.
 
 ## First-Time Admin Setup
 
