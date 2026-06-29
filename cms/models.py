@@ -147,11 +147,12 @@ class CMSImage(db.Model):
     alt_text = db.Column(db.String(300), nullable=True)
     folder = db.Column(db.String(100), default="general")
     file_size = db.Column(db.Integer, nullable=True)
+    minio_url = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     @property
     def url(self):
-        return f"/static/uploads/{self.folder}/{self.filename}"
+        return self.minio_url or f"/static/uploads/{self.folder}/{self.filename}"
 
     @property
     def filepath(self):

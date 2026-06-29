@@ -46,7 +46,10 @@
             <img src="{{ img.url }}" alt="{{ img.alt_text or '' }}" class="w-full h-40 object-cover">
             <div class="p-3 bg-slate-50 dark:bg-slate-900">
                 <div class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ img.original_filename }}</div>
-                <div class="text-xs text-slate-400 dark:text-slate-500">{{ img.folder }} · {{ img.created_at.strftime('%b %d') }}</div>
+                <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                    {{ img.folder }} · {{ img.created_at.strftime('%b %d') }}
+                    {% if img.minio_url %}<span class="px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-primary text-[10px] font-bold uppercase">MinIO</span>{% endif %}
+                </div>
             </div>
             <!-- Overlay Actions -->
             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">

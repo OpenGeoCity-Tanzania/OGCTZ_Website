@@ -1,4 +1,5 @@
 import os
+import uuid
 from functools import wraps
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -7,7 +8,8 @@ from flask_login import login_required, login_user, logout_user, current_user
 from ..models import db, AdminUser, BlogPost, Category, Comment, Subscriber, CMSImage, SiteContent
 from ..utils import (
     save_uploaded_file, make_unique_slug, slugify, get_or_create_content, create_admin_user,
-    parse_scheduled_datetime, seed_content_blocks, _ensure_superadmin
+    parse_scheduled_datetime, seed_content_blocks, _ensure_superadmin, minio_configured,
+    upload_to_minio, delete_from_minio, minio_object_name_from_url
 )
 
 admin_bp = Blueprint("admin", __name__, template_folder="../templates")
@@ -137,9 +139,19 @@ def _apply_post_form(post, form, is_new=False):
 
     # Featured image upload
     if "featured_image" in request.files:
-        filename = save_uploaded_file(request.files["featured_image"], folder="blog")
-        if filename:
-            post.featured_image = f"/static/uploads/blog/{filename}"
+        file = request.files["featured_image"]
+        if file and file.filename:
+            if minio_configured():
+                minio_url = upload_to_minio(file, folder="blog")
+                if minio_url:
+                    post.featured_image = minio_url
+                else:
+                    flash("Featured image upload to MinIO failed. Please check MinIO settings.", "error")
+                    return False, "MinIO upload failed"
+            else:
+                filename = save_uploaded_file(file, folder="blog")
+                if filename:
+                    post.featured_image = f"/static/uploads/blog/{filename}"
 
     return True, None
 
@@ -219,20 +231,41 @@ def admin_image_upload():
         flash("No file selected.", "error")
         return redirect(url_for("admin.admin_images", folder=folder))
 
-    filename = save_uploaded_file(file, folder=folder)
-    if filename:
-        image = CMSImage(
-            filename=filename,
-            original_filename=secure_filename(file.filename),
-            alt_text=request.form.get("alt_text", "").strip() or None,
-            folder=folder,
-            file_size=os.path.getsize(os.path.join(current_app.root_path, "static", "uploads", folder, filename))
-        )
-        db.session.add(image)
-        db.session.commit()
-        flash("Image uploaded successfully.", "success")
+    original = secure_filename(file.filename)
+    if minio_configured():
+        minio_url = upload_to_minio(file, folder=folder)
+        if minio_url:
+            new_filename = original.rsplit(".", 1)[0].lower().replace(" ", "-") if "." in original else "image"
+            ext = original.rsplit(".", 1)[-1].lower() if "." in original else "jpg"
+            new_filename = f"{new_filename[:60]}-{uuid.uuid4().hex[:8]}.{ext}"
+            image = CMSImage(
+                filename=new_filename,
+                original_filename=original,
+                alt_text=request.form.get("alt_text", "").strip() or None,
+                folder=folder,
+                minio_url=minio_url,
+                file_size=0
+            )
+            db.session.add(image)
+            db.session.commit()
+            flash("Image uploaded to MinIO successfully.", "success")
+        else:
+            flash("MinIO upload failed. Please check your MinIO settings.", "error")
     else:
-        flash("Invalid file. Allowed types: PNG, JPG, GIF, WEBP, SVG.", "error")
+        filename = save_uploaded_file(file, folder=folder)
+        if filename:
+            image = CMSImage(
+                filename=filename,
+                original_filename=original,
+                alt_text=request.form.get("alt_text", "").strip() or None,
+                folder=folder,
+                file_size=os.path.getsize(os.path.join(current_app.root_path, "static", "uploads", folder, filename))
+            )
+            db.session.add(image)
+            db.session.commit()
+            flash("Image uploaded successfully.", "success")
+        else:
+            flash("Invalid file. Allowed types: PNG, JPG, GIF, WEBP, SVG.", "error")
     return redirect(url_for("admin.admin_images", folder=folder))
 
 
@@ -240,9 +273,14 @@ def admin_image_upload():
 @login_required
 def admin_image_delete(image_id):
     image = CMSImage.query.get_or_404(image_id)
-    full_path = os.path.join(current_app.root_path, image.filepath)
-    if os.path.exists(full_path):
-        os.remove(full_path)
+    if image.minio_url:
+        bucket, object_name = minio_object_name_from_url(image.minio_url)
+        if object_name:
+            delete_from_minio(object_name, bucket)
+    else:
+        full_path = os.path.join(current_app.root_path, image.filepath)
+        if os.path.exists(full_path):
+            os.remove(full_path)
     db.session.delete(image)
     db.session.commit()
     flash("Image deleted.", "success")
