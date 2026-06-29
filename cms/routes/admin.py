@@ -233,6 +233,10 @@ def admin_image_upload():
 
     original = secure_filename(file.filename)
     if minio_configured():
+        # Capture size before upload consumes the file stream
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
         minio_url = upload_to_minio(file, folder=folder)
         if minio_url:
             new_filename = original.rsplit(".", 1)[0].lower().replace(" ", "-") if "." in original else "image"
@@ -244,7 +248,7 @@ def admin_image_upload():
                 alt_text=request.form.get("alt_text", "").strip() or None,
                 folder=folder,
                 minio_url=minio_url,
-                file_size=0
+                file_size=file_size
             )
             db.session.add(image)
             db.session.commit()
