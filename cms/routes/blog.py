@@ -49,6 +49,20 @@ def blog_post(slug):
     headings = extract_headings(post.content)
     page_description = post.meta_description or post.excerpt or ""
     site_url = current_app.config.get("SITE_URL", os.environ.get("SITE_URL", "https://ogctz.org"))
+
+    # Previous / next post navigation (by publication date)
+    post_date = post.published_at or post.created_at
+    prev_query = _visible_posts_query().filter(BlogPost.id != post.id)
+    next_query = _visible_posts_query().filter(BlogPost.id != post.id)
+    if post.published_at:
+        prev_query = prev_query.filter(BlogPost.published_at < post.published_at)
+        next_query = next_query.filter(BlogPost.published_at > post.published_at)
+    else:
+        prev_query = prev_query.filter(BlogPost.created_at < post.created_at)
+        next_query = next_query.filter(BlogPost.created_at > post.created_at)
+    prev_post = prev_query.order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc()).first()
+    next_post = next_query.order_by(BlogPost.published_at.asc(), BlogPost.created_at.asc()).first()
+
     return render_template(
         "blog/post.html",
         page_title=post.meta_title or post.title,
@@ -57,6 +71,8 @@ def blog_post(slug):
         related=related,
         comments=approved_comments,
         headings=headings,
+        prev_post=prev_post,
+        next_post=next_post,
         canonical_url=site_url + url_for("blog.blog_post", slug=post.slug)
     )
 
