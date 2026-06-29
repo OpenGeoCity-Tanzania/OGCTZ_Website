@@ -6,7 +6,7 @@
 <meta property="og:description" content="{{ post.meta_description or post.excerpt or (post.content | striptags | truncate(160)) }}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{ site_url }}{{ url_for('blog.blog_post', slug=post.slug) }}">
-{% if post.featured_image %}<meta property="og:image" content="{{ site_url }}{{ post.featured_image }}">{% endif %}
+{% if post.featured_image %}{% set og_image = post.featured_image if post.featured_image.startswith('http://') or post.featured_image.startswith('https://') else site_url + post.featured_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
 {% for tag in post.tag_list %}<meta property="article:tag" content="{{ tag }}">{% endfor %}
 <link rel="canonical" href="{{ canonical_url }}">
 
@@ -49,6 +49,26 @@
         margin: 2em auto;
         max-width: 100%;
         height: auto;
+        background: #f1f5f9;
+    }
+    .image-error-placeholder {
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: 1rem;
+        color: #64748b;
+        font-style: italic;
+        margin: 2em auto;
+        padding: 1rem;
+        text-align: center;
+    }
+    .dark .image-error-placeholder {
+        background: #1e293b;
+        border-color: #475569;
+        color: #94a3b8;
     }
     .article-content figure {
         margin: 2em 0;
@@ -164,12 +184,14 @@
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
     .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
+        line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -236,12 +258,20 @@
 <!-- Featured Image -->
 {% if post.featured_image %}
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 md:-mt-12">
-    <figure class="relative">
-        <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-full max-h-[280px] md:max-h-[420px] lg:max-h-[520px] object-contain bg-slate-100 dark:bg-slate-800 rounded-2xl shadow-2xl mx-auto">
-        {% if post.excerpt %}
-        <figcaption class="mt-3 text-center text-sm text-slate-500 dark:text-slate-400 italic">{{ post.excerpt }}</figcaption>
-        {% endif %}
+    <figure class="relative bg-slate-100 dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden min-h-[200px] md:min-h-[280px] lg:min-h-[360px] flex items-center justify-center">
+        <img src="{{ post.featured_image }}" alt="{{ post.title }}"
+             class="w-full max-h-[280px] md:max-h-[420px] lg:max-h-[520px] object-contain mx-auto relative z-10"
+             onerror="this.style.display='none'; this.parentElement.querySelector('.image-fallback').style.display='flex';">
+        <div class="image-fallback absolute inset-0 hidden flex-col items-center justify-center p-6 text-center z-0">
+            <h2 class="text-lg md:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300">{{ post.title }}</h2>
+            {% if post.excerpt %}
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 italic">{{ post.excerpt }}</p>
+            {% endif %}
+        </div>
     </figure>
+    {% if post.excerpt %}
+    <figcaption class="mt-3 text-center text-sm text-slate-500 dark:text-slate-400 italic">{{ post.excerpt }}</figcaption>
+    {% endif %}
 </div>
 {% endif %}
 
@@ -447,7 +477,7 @@
         "@id": "{{ canonical_url }}"
     }
     {% if post.featured_image %},
-    "image": "{{ site_url }}{{ post.featured_image }}"
+    "image": "{{ post.featured_image if post.featured_image.startswith('http://') or post.featured_image.startswith('https://') else site_url + post.featured_image }}"
     {% endif %}
 }
 </script>
@@ -456,6 +486,19 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Graceful fallback for broken inline images
+        document.querySelectorAll('.article-content img').forEach(function(img) {
+            img.addEventListener('error', function() {
+                if (img.dataset.broken) return;
+                img.dataset.broken = 'true';
+                img.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'image-error-placeholder';
+                placeholder.textContent = img.alt || 'Image unavailable';
+                img.parentNode.insertBefore(placeholder, img.nextSibling);
+            });
+        });
+
         const progressBar = document.getElementById('reading-progress');
         function updateProgress() {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;

@@ -67,9 +67,15 @@
         <!-- Featured Image -->
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Featured Image</label>
-            <div class="flex items-center gap-4">
+            <div class="flex items-start gap-4">
                 {% if post and post.featured_image %}
-                <img src="{{ post.featured_image }}" alt="Featured" class="h-24 w-24 object-cover rounded-lg border border-slate-200 dark:border-slate-600">
+                <div class="shrink-0">
+                    <img src="{{ post.featured_image }}" alt="Featured" class="h-24 w-24 object-cover rounded-lg border border-slate-200 dark:border-slate-600">
+                    <label class="flex items-center gap-2 mt-2 cursor-pointer">
+                        <input type="checkbox" name="remove_featured_image" value="1" class="w-4 h-4 text-red-600 rounded focus:ring-red-500">
+                        <span class="text-xs text-red-600 dark:text-red-400 font-medium">Remove image</span>
+                    </label>
+                </div>
                 {% endif %}
                 <input type="file" name="featured_image" accept="image/*"
                        class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-primary file:text-white hover:file:bg-sky-600">

@@ -137,6 +137,10 @@ def _apply_post_form(post, form, is_new=False):
     else:  # draft
         post.published = False
 
+    # Remove featured image if requested
+    if form.get("remove_featured_image"):
+        post.featured_image = None
+
     # Featured image upload
     if "featured_image" in request.files:
         file = request.files["featured_image"]
