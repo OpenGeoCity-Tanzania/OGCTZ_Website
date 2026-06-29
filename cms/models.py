@@ -152,7 +152,13 @@ class CMSImage(db.Model):
 
     @property
     def url(self):
-        return self.minio_url or f"/static/uploads/{self.folder}/{self.filename}"
+        if self.minio_url:
+            # Lazy import to avoid circular dependency with utils.py
+            from .utils import minio_object_name_from_url, minio_public_url
+            bucket, object_name = minio_object_name_from_url(self.minio_url)
+            if object_name:
+                return minio_public_url(object_name, bucket)
+        return f"/static/uploads/{self.folder}/{self.filename}"
 
     @property
     def filepath(self):

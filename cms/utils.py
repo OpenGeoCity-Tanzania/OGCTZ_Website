@@ -34,8 +34,12 @@ def get_minio_client():
 
 
 def minio_public_url(object_name, bucket=None):
-    """Build a public URL for a MinIO object using the configured bucket."""
+    """Build a public or proxy URL for a MinIO object using the configured bucket."""
     bucket = bucket or os.environ.get("MINIO_BUCKET", "ogctz")
+    public_bucket = os.environ.get("MINIO_PUBLIC", "true").lower() in ("true", "1", "yes")
+    if not public_bucket:
+        # Serve private bucket objects through the Flask proxy route
+        return f"/media/{bucket}/{object_name}"
     endpoint = os.environ.get("MINIO_ENDPOINT", "localhost:9000")
     secure = os.environ.get("MINIO_SECURE", "true").lower() in ("true", "1", "yes")
     scheme = "https" if secure else "http"
@@ -86,10 +90,15 @@ def delete_from_minio(object_name, bucket=None):
 
 
 def minio_object_name_from_url(url):
-    """Extract bucket/object-name from a MinIO public URL."""
+    """Extract bucket/object-name from a MinIO public URL or internal proxy URL."""
     if not url:
         return None, None
     bucket = os.environ.get("MINIO_BUCKET", "ogctz")
+    # Internal proxy URL format: /media/bucket/object-name
+    proxy_prefix = f"/media/{bucket}/"
+    if url.startswith(proxy_prefix):
+        return bucket, url[len(proxy_prefix):]
+    # Direct MinIO URL format: https://endpoint/bucket/object-name
     endpoint = os.environ.get("MINIO_ENDPOINT", "localhost:9000")
     prefix = f"{endpoint}/{bucket}/"
     if prefix in url:
