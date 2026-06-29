@@ -149,8 +149,8 @@ def blog_comment(slug):
     post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if not post.is_visible():
         return render_template("404.html"), 404
-    name = request.form.get("name", "").strip()
-    email = request.form.get("email", "").strip()
+    name = request.form.get("name", "").strip().title()
+    email = request.form.get("email", "").strip().lower()
     content = request.form.get("content", "").strip()
     if not name or not email or not content:
         flash("Please fill in all comment fields.", "error")
