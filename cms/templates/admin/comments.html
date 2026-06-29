@@ -32,7 +32,7 @@
                         <a href="{{ url_for('blog.blog_post', slug=comment.post.slug) }}" target="_blank" class="text-brand-primary hover:underline">{{ comment.post.title }}</a>
                     </td>
                     <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
-                        {{ comment.author_name }}<br>
+                        {{ comment.author_name | title }}<br>
                         <span class="text-xs text-slate-400">{{ comment.email }}</span>
                     </td>
                     <td class="px-6 py-4 text-slate-600 dark:text-slate-300 max-w-md">{{ comment.content }}</td>

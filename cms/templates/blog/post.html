@@ -407,10 +407,10 @@
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold">
-                            {{ comment.author_name[0] | upper }}
+                            {{ (comment.author_name | title)[0] }}
                         </div>
                         <div>
-                            <div class="font-bold text-slate-900 dark:text-white">{{ comment.author_name }}</div>
+                            <div class="font-bold text-slate-900 dark:text-white">{{ comment.author_name | title }}</div>
                             <div class="text-xs text-slate-500 dark:text-slate-400">{{ comment.created_at.strftime('%B %d, %Y') }}</div>
                         </div>
                     </div>
