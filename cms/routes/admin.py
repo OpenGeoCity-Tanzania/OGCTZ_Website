@@ -505,7 +505,6 @@ def admin_subscriber_delete(sub_id):
 @admin_bp.route("/admin/setup", methods=["GET", "POST"])
 def admin_setup():
     if AdminUser.query.first():
-        flash("Admin user already exists. Please log in.", "warning")
         return redirect(url_for("admin.admin_login"))
 
     if request.method == "POST":
