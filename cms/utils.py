@@ -64,10 +64,15 @@ def upload_to_openinary(file, folder="general", filename=None):
             data=data,
             timeout=60,
         )
-        response.raise_for_status()
+        if not response.ok:
+            current_app.logger.error(
+                f"Openinary upload failed: {response.status_code} {response.reason} - {response.text}"
+            )
+            return None
         result = response.json()
         if result.get("success") and result.get("files"):
             return result["files"][0].get("url")
+        current_app.logger.error(f"Openinary upload unexpected response: {result}")
         return None
     except Exception as e:
         current_app.logger.error(f"Openinary upload failed: {e}")
