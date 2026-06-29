@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, render_template, request, flash, redirect, url_for, Response, current_app
 from flask_login import current_user
 from ..models import db, BlogPost, Category, Comment, Subscriber
-from ..utils import extract_headings
+from ..utils import extract_headings, comment_requires_moderation
 
 blog_bp = Blueprint("blog", __name__, template_folder="../templates")
 
@@ -145,7 +145,7 @@ def blog_search():
 
 @blog_bp.route("/blog/<slug>/comment", methods=["POST"])
 def blog_comment(slug):
-    """Submit a comment on a post (pending approval)."""
+    """Submit a comment on a post. Auto-approve unless flagged by moderation words."""
     post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if not post.is_visible():
         return render_template("404.html"), 404
@@ -155,10 +155,20 @@ def blog_comment(slug):
     if not name or not email or not content:
         flash("Please fill in all comment fields.", "error")
         return redirect(url_for("blog.blog_post", slug=post.slug) + "#comments")
-    comment = Comment(post_id=post.id, author_name=name, email=email, content=content)
+    flagged = comment_requires_moderation(content)
+    comment = Comment(
+        post_id=post.id,
+        author_name=name,
+        email=email,
+        content=content,
+        is_approved=not flagged,
+    )
     db.session.add(comment)
     db.session.commit()
-    flash("Your comment has been submitted and is awaiting approval.", "success")
+    if flagged:
+        flash("Your comment has been flagged for review and will appear after approval.", "warning")
+    else:
+        flash("Your comment has been published.", "success")
     return redirect(url_for("blog.blog_post", slug=post.slug) + "#comments")
 
 

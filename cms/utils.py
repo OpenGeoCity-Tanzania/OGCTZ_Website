@@ -132,6 +132,23 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def comment_requires_moderation(content):
+    """Return True if comment contains flagged words and requires manual approval.
+
+    Configure flagged words via COMMENT_MODERATION_WORDS env variable as a
+    comma-separated list, e.g. spam,scam,harassment. When empty, all comments
+    are approved automatically.
+    """
+    flagged = os.environ.get("COMMENT_MODERATION_WORDS", "").strip()
+    if not flagged:
+        return False
+    words = [w.strip().lower() for w in flagged.split(",") if w.strip()]
+    if not words:
+        return False
+    content_lower = content.lower()
+    return any(word in content_lower for word in words)
+
+
 def extract_headings(html_content):
     """Extract h2/h3 headings from HTML for a table of contents.
     Returns list of dicts with id, level, text.
