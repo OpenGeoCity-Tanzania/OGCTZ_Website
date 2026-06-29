@@ -220,7 +220,13 @@ def admin_post_delete(post_id):
 def admin_images():
     folder = request.args.get("folder", "general")
     images = CMSImage.query.order_by(CMSImage.created_at.desc()).all()
-    return render_template("admin/images.html", page_title="Image Library", images=images, folder=folder)
+    return render_template(
+        "admin/images.html",
+        page_title="Image Library",
+        images=images,
+        folder=folder,
+        openinary_configured=openinary_configured(),
+    )
 
 
 @admin_bp.route("/admin/images/upload", methods=["POST"])
@@ -260,6 +266,7 @@ def admin_image_upload():
         else:
             flash("Openinary upload failed. Please check your Openinary settings.", "error")
     else:
+        current_app.logger.warning("Openinary is not configured; uploading image to local storage")
         filename = save_uploaded_file(file, folder=folder)
         if filename:
             image = CMSImage(

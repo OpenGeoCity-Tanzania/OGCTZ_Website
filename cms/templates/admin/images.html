@@ -10,6 +10,12 @@
 
 <!-- Upload Form -->
 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 mb-8">
+    {% if not openinary_configured %}
+    <div class="mb-4 p-4 rounded-lg bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 text-sm">
+        <strong>Openinary is not configured.</strong> Images will be uploaded to local storage.
+        Set <code>OPENINARY_URL</code> and <code>OPENINARY_API_KEY</code> in your environment to enable cloud storage.
+    </div>
+    {% endif %}
     <form method="POST" action="{{ url_for('admin.admin_image_upload') }}" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
         <div class="flex-1 min-w-[200px]">
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Image</label>
