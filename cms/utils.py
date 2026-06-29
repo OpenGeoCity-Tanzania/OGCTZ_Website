@@ -36,6 +36,25 @@ def openinary_path_from_url(url):
     return None
 
 
+def create_openinary_folder(folder):
+    """Ensure an Openinary folder exists. Returns True if it exists or was created."""
+    if not openinary_configured() or not folder:
+        return False
+    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    api_key = os.environ.get("OPENINARY_API_KEY")
+    try:
+        response = requests.post(
+            f"{base_url}/upload/createfolder",
+            headers={"Authorization": f"Bearer {api_key}"},
+            data={"folder": folder},
+            timeout=30,
+        )
+        return response.status_code in (200, 201) or response.status_code == 409
+    except Exception as e:
+        current_app.logger.error(f"Openinary create folder failed: {e}")
+        return False
+
+
 def upload_to_openinary(file, folder="general", filename=None):
     """Upload a file to Openinary and return its delivery URL. Returns None on failure."""
     if not file or not allowed_file(file.filename):
@@ -45,6 +64,7 @@ def upload_to_openinary(file, folder="general", filename=None):
 
     base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
     api_key = os.environ.get("OPENINARY_API_KEY")
+    create_openinary_folder(folder)
     original = secure_filename(file.filename)
     new_filename = filename or unique_filename(original)
 
