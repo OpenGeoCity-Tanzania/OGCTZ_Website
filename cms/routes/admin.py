@@ -8,8 +8,8 @@ from flask_login import login_required, login_user, logout_user, current_user
 from ..models import db, AdminUser, BlogPost, Category, Comment, Subscriber, CMSImage, SiteContent
 from ..utils import (
     save_uploaded_file, make_unique_slug, slugify, get_or_create_content, create_admin_user,
-    parse_scheduled_datetime, seed_content_blocks, _ensure_superadmin, minio_configured,
-    upload_to_minio, delete_from_minio, minio_object_name_from_url
+    parse_scheduled_datetime, seed_content_blocks, _ensure_superadmin, openinary_configured,
+    upload_to_openinary, delete_from_openinary, openinary_path_from_url
 )
 
 admin_bp = Blueprint("admin", __name__, template_folder="../templates")
@@ -145,13 +145,13 @@ def _apply_post_form(post, form, is_new=False):
     if "featured_image" in request.files:
         file = request.files["featured_image"]
         if file and file.filename:
-            if minio_configured():
-                minio_url = upload_to_minio(file, folder="blog")
-                if minio_url:
-                    post.featured_image = minio_url
+            if openinary_configured():
+                storage_url = upload_to_openinary(file, folder="blog")
+                if storage_url:
+                    post.featured_image = storage_url
                 else:
-                    flash("Featured image upload to MinIO failed. Please check MinIO settings.", "error")
-                    return False, "MinIO upload failed"
+                    flash("Featured image upload to Openinary failed. Please check Openinary settings.", "error")
+                    return False, "Openinary upload failed"
             else:
                 filename = save_uploaded_file(file, folder="blog")
                 if filename:
@@ -236,13 +236,13 @@ def admin_image_upload():
         return redirect(url_for("admin.admin_images", folder=folder))
 
     original = secure_filename(file.filename)
-    if minio_configured():
+    if openinary_configured():
         # Capture size before upload consumes the file stream
         file.seek(0, os.SEEK_END)
         file_size = file.tell()
         file.seek(0)
-        minio_url = upload_to_minio(file, folder=folder)
-        if minio_url:
+        storage_url = upload_to_openinary(file, folder=folder)
+        if storage_url:
             new_filename = original.rsplit(".", 1)[0].lower().replace(" ", "-") if "." in original else "image"
             ext = original.rsplit(".", 1)[-1].lower() if "." in original else "jpg"
             new_filename = f"{new_filename[:60]}-{uuid.uuid4().hex[:8]}.{ext}"
@@ -251,14 +251,14 @@ def admin_image_upload():
                 original_filename=original,
                 alt_text=request.form.get("alt_text", "").strip() or None,
                 folder=folder,
-                minio_url=minio_url,
+                storage_url=storage_url,
                 file_size=file_size
             )
             db.session.add(image)
             db.session.commit()
-            flash("Image uploaded to MinIO successfully.", "success")
+            flash("Image uploaded to Openinary successfully.", "success")
         else:
-            flash("MinIO upload failed. Please check your MinIO settings.", "error")
+            flash("Openinary upload failed. Please check your Openinary settings.", "error")
     else:
         filename = save_uploaded_file(file, folder=folder)
         if filename:
@@ -281,10 +281,10 @@ def admin_image_upload():
 @login_required
 def admin_image_delete(image_id):
     image = CMSImage.query.get_or_404(image_id)
-    if image.minio_url:
-        bucket, object_name = minio_object_name_from_url(image.minio_url)
-        if object_name:
-            delete_from_minio(object_name, bucket)
+    if image.storage_url:
+        path = openinary_path_from_url(image.storage_url)
+        if path:
+            delete_from_openinary(path)
     else:
         full_path = os.path.join(current_app.root_path, image.filepath)
         if os.path.exists(full_path):

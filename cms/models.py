@@ -147,17 +147,13 @@ class CMSImage(db.Model):
     alt_text = db.Column(db.String(300), nullable=True)
     folder = db.Column(db.String(100), default="general")
     file_size = db.Column(db.Integer, nullable=True)
-    minio_url = db.Column(db.String(500), nullable=True)
+    storage_url = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     @property
     def url(self):
-        if self.minio_url:
-            # Lazy import to avoid circular dependency with utils.py
-            from .utils import minio_object_name_from_url, minio_public_url
-            bucket, object_name = minio_object_name_from_url(self.minio_url)
-            if object_name:
-                return minio_public_url(object_name, bucket)
+        if self.storage_url:
+            return self.storage_url
         return f"/static/uploads/{self.folder}/{self.filename}"
 
     @property

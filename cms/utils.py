@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import re
 import uuid
+import requests
 from werkzeug.utils import secure_filename
 from flask import current_app
 from .models import db, AdminUser, BlogPost, SiteContent
@@ -9,101 +10,87 @@ from .models import db, AdminUser, BlogPost, SiteContent
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "svg"}
 
 
-def minio_configured():
-    """Return True when all required MinIO environment variables are set."""
-    return all(
-        os.environ.get(k)
-        for k in ("MINIO_ENDPOINT", "MINIO_ACCESS_KEY", "MINIO_SECRET_KEY", "MINIO_BUCKET")
-    )
+def openinary_configured():
+    """Return True when Openinary URL and API key are set."""
+    return all(os.environ.get(k) for k in ("OPENINARY_URL", "OPENINARY_API_KEY"))
 
 
-def get_minio_client():
-    """Return a configured MinIO client, or None if not configured."""
-    if not minio_configured():
+def openinary_url(path, transformations=None):
+    """Build an Openinary delivery URL for a stored path."""
+    if not path:
         return None
-    try:
-        from minio import Minio
-    except ImportError:
+    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    if transformations:
+        return f"{base_url}/t/{transformations}/{path}"
+    return f"{base_url}/t/{path}"
+
+
+def openinary_path_from_url(url):
+    """Extract the storage path from an Openinary URL."""
+    if not url:
         return None
-
-    endpoint = os.environ.get("MINIO_ENDPOINT", "localhost:9000")
-    access_key = os.environ.get("MINIO_ACCESS_KEY")
-    secret_key = os.environ.get("MINIO_SECRET_KEY")
-    secure = os.environ.get("MINIO_SECURE", "true").lower() in ("true", "1", "yes")
-    return Minio(endpoint, access_key=access_key, secret_key=secret_key, secure=secure)
-
-
-def minio_public_url(object_name, bucket=None):
-    """Build a public or proxy URL for a MinIO object using the configured bucket."""
-    bucket = bucket or os.environ.get("MINIO_BUCKET", "ogctz")
-    public_bucket = os.environ.get("MINIO_PUBLIC", "true").lower() in ("true", "1", "yes")
-    if not public_bucket:
-        # Serve private bucket objects through the Flask proxy route
-        return f"/media/{bucket}/{object_name}"
-    endpoint = os.environ.get("MINIO_ENDPOINT", "localhost:9000")
-    secure = os.environ.get("MINIO_SECURE", "true").lower() in ("true", "1", "yes")
-    scheme = "https" if secure else "http"
-    # MinIO public URLs typically look like: https://endpoint/bucket/object-name
-    return f"{scheme}://{endpoint}/{bucket}/{object_name}"
+    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    prefix = f"{base_url}/t/"
+    if url.startswith(prefix):
+        return url[len(prefix):]
+    return None
 
 
-def upload_to_minio(file, folder="general", filename=None):
-    """Upload a file to MinIO and return its public URL. Returns None on failure."""
+def upload_to_openinary(file, folder="general", filename=None):
+    """Upload a file to Openinary and return its delivery URL. Returns None on failure."""
     if not file or not allowed_file(file.filename):
         return None
-
-    client = get_minio_client()
-    if not client:
+    if not openinary_configured():
         return None
 
-    bucket = os.environ.get("MINIO_BUCKET", "ogctz")
+    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    api_key = os.environ.get("OPENINARY_API_KEY")
     original = secure_filename(file.filename)
     new_filename = filename or unique_filename(original)
-    object_name = f"{folder}/{new_filename}" if folder else new_filename
 
     try:
-        # Ensure bucket exists
-        if not client.bucket_exists(bucket):
-            client.make_bucket(bucket)
-        # Upload file content
-        file_length = os.fstat(file.fileno()).st_size
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
         file.seek(0)
-        client.put_object(bucket, object_name, file, file_length, content_type=file.content_type or "application/octet-stream")
-        return minio_public_url(object_name, bucket)
+
+        files = {
+            "files": (new_filename, file, file.content_type or "application/octet-stream")
+        }
+        data = {"folder": folder, "names": new_filename}
+        response = requests.post(
+            f"{base_url}/upload",
+            headers={"Authorization": f"Bearer {api_key}"},
+            files=files,
+            data=data,
+            timeout=60,
+        )
+        response.raise_for_status()
+        result = response.json()
+        if result.get("success") and result.get("files"):
+            return result["files"][0].get("url")
+        return None
     except Exception as e:
-        current_app.logger.error(f"MinIO upload failed: {e}")
+        current_app.logger.error(f"Openinary upload failed: {e}")
         return None
 
 
-def delete_from_minio(object_name, bucket=None):
-    """Delete an object from MinIO. Returns True on success."""
-    client = get_minio_client()
-    if not client:
+def delete_from_openinary(path):
+    """Delete a file from Openinary storage. Returns True on success."""
+    if not openinary_configured() or not path:
         return False
-    bucket = bucket or os.environ.get("MINIO_BUCKET", "ogctz")
+    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    api_key = os.environ.get("OPENINARY_API_KEY")
     try:
-        client.remove_object(bucket, object_name)
+        response = requests.delete(
+            f"{base_url}/storage/{path}",
+            headers={"Authorization": f"Bearer {api_key}"},
+            timeout=30,
+        )
+        response.raise_for_status()
         return True
     except Exception as e:
-        current_app.logger.error(f"MinIO delete failed: {e}")
+        current_app.logger.error(f"Openinary delete failed: {e}")
         return False
-
-
-def minio_object_name_from_url(url):
-    """Extract bucket/object-name from a MinIO public URL or internal proxy URL."""
-    if not url:
-        return None, None
-    bucket = os.environ.get("MINIO_BUCKET", "ogctz")
-    # Internal proxy URL format: /media/bucket/object-name
-    proxy_prefix = f"/media/{bucket}/"
-    if url.startswith(proxy_prefix):
-        return bucket, url[len(proxy_prefix):]
-    # Direct MinIO URL format: https://endpoint/bucket/object-name
-    endpoint = os.environ.get("MINIO_ENDPOINT", "localhost:9000")
-    prefix = f"{endpoint}/{bucket}/"
-    if prefix in url:
-        return bucket, url.split(prefix, 1)[-1]
-    return None, None
 
 
 def parse_scheduled_datetime(value):

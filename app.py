@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ## ...existing code...
-from flask import Flask, render_template, request, flash, redirect, url_for, Response, session, send_from_directory, abort
+from flask import Flask, render_template, request, flash, redirect, url_for, Response, session, send_from_directory
 import os
 import re
 import time
@@ -16,7 +16,6 @@ import random
 # ── Content Management System ─────────────────────────────────────────────────
 from cms import init_cms, get_content, published_posts_query, add_heading_ids
 from cms.models import BlogPost
-from cms.utils import get_minio_client, minio_object_name_from_url
 
 # ── YouTube live feed helpers ─────────────────────────────────────────────────
 _yt_cache = {"videos": [], "fetched_at": 0}
@@ -128,36 +127,6 @@ else:
 
 # Secret key (use env variable on Vercel)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
-
-
-# ── Private MinIO media proxy ─────────────────────────────────────────────────
-@app.route("/media/<path:object_name>")
-def media_proxy(object_name):
-    """Serve a private MinIO object through the Flask app."""
-    bucket = os.environ.get("MINIO_BUCKET", "ogctz")
-    if object_name.startswith(f"{bucket}/"):
-        object_name = object_name[len(bucket) + 1:]
-
-    client = get_minio_client()
-    if not client:
-        abort(404)
-
-    try:
-        response = client.get_object(bucket, object_name)
-        def stream():
-            try:
-                for chunk in response.stream(8192):
-                    yield chunk
-            finally:
-                response.close()
-                response.release_conn()
-        return Response(
-            stream(),
-            mimetype=response.getheader("Content-Type") or "application/octet-stream"
-        )
-    except Exception as e:
-        app.logger.error(f"Media proxy error: {e}")
-        abort(404)
 
 
 # Quiz Questions Database
