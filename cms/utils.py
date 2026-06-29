@@ -17,25 +17,30 @@ def openinary_configured():
     return all(os.environ.get(k) for k in ("OPENINARY_URL", "OPENINARY_API_KEY"))
 
 
-def openinary_url(path, transformations=None):
+def openinary_url(path, transformations=None, base_url=None):
     """Build an Openinary delivery URL for a stored path."""
     if not path:
         return None
-    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
+    base_url = (base_url or os.environ.get("OPENINARY_URL", "http://localhost:3000")).rstrip("/")
     if transformations:
         return f"{base_url}/t/{transformations}/{path}"
     return f"{base_url}/t/{path}"
 
 
-def openinary_path_from_url(url):
-    """Extract the storage path from an Openinary URL."""
+def openinary_path_from_any_url(url):
+    """Extract the storage path from any Openinary delivery URL."""
     if not url:
         return None
-    base_url = os.environ.get("OPENINARY_URL", "http://localhost:3000").rstrip("/")
-    prefix = f"{base_url}/t/"
-    if url.startswith(prefix):
-        return url[len(prefix):]
+    marker = "/t/"
+    idx = url.rfind(marker)
+    if idx != -1:
+        return url[idx + len(marker):]
     return None
+
+
+def openinary_path_from_url(url):
+    """Extract the storage path from an Openinary URL."""
+    return openinary_path_from_any_url(url)
 
 
 def create_openinary_folder(folder):

@@ -153,6 +153,14 @@ class CMSImage(db.Model):
     @property
     def url(self):
         if self.storage_url:
+            # Openinary sometimes returns the wrong domain in the stored URL
+            # (e.g. behind a reverse proxy). Rebuild the delivery URL from the
+            # path so we can override the public domain with OPENINARY_PUBLIC_URL.
+            from .utils import openinary_path_from_any_url, openinary_url
+            path = openinary_path_from_any_url(self.storage_url)
+            if path:
+                public_url = os.environ.get("OPENINARY_PUBLIC_URL") or os.environ.get("OPENINARY_URL", "http://localhost:3000")
+                return openinary_url(path, base_url=public_url)
             return self.storage_url
         return f"/static/uploads/{self.folder}/{self.filename}"
 
