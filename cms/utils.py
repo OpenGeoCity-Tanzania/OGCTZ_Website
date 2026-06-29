@@ -1,6 +1,8 @@
 from datetime import datetime
+import io
 import os
 import re
+import traceback
 import uuid
 import requests
 from werkzeug.utils import secure_filename
@@ -69,12 +71,12 @@ def upload_to_openinary(file, folder="general", filename=None):
     new_filename = filename or unique_filename(original)
 
     try:
-        file.seek(0, os.SEEK_END)
-        file_size = file.tell()
         file.seek(0)
+        file_bytes = io.BytesIO(file.read())
+        file_size = len(file_bytes.getvalue())
 
         files = {
-            "files": (new_filename, file, file.content_type or "application/octet-stream")
+            "files": (new_filename, file_bytes, file.content_type or "application/octet-stream")
         }
         data = {"folder": folder, "names": new_filename}
         response = requests.post(
@@ -91,11 +93,13 @@ def upload_to_openinary(file, folder="general", filename=None):
             return None
         result = response.json()
         if result.get("success") and result.get("files"):
-            return result["files"][0].get("url")
+            url = result["files"][0].get("url")
+            current_app.logger.info(f"Openinary upload success: {url} (size={file_size})")
+            return url
         current_app.logger.error(f"Openinary upload unexpected response: {result}")
         return None
     except Exception as e:
-        current_app.logger.error(f"Openinary upload failed: {e}")
+        current_app.logger.error(f"Openinary upload failed: {e}\n{traceback.format_exc()}")
         return None
 
 
